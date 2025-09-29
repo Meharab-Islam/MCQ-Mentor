@@ -6,17 +6,17 @@ on:
     branches:
       - main
       - master
-      - develop
+      - developer
   push:
     branches:
       - main
       - master
-      - develop
+      - developer
 
 jobs:
   # Single Job: শুধুমাত্র APK এবং IPA ফাইল তৈরি করবে
   minimal_build:
-    name: 🏗️ Build APK and IPA
+    name: 🏗️ Build APK
     runs-on: macos-latest # iOS বিল্ডের জন্য macos রানার আবশ্যক
     
     steps:
@@ -44,10 +44,6 @@ jobs:
       - name: Build Android APK
         run: flutter build apk --release --split-per-abi
 
-      # --- 4. Build iOS IPA ---
-      - name: Build iOS IPA
-        run: flutter build ipa --release 
-
       # Artifacts আপলোড (ঐচ্ছিক, ফাইলগুলো GitHub-এ সংরক্ষণের জন্য)
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -55,8 +51,6 @@ jobs:
           name: android-release-apk
           path: build/app/outputs/apk/release
           
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
         with:
           name: ios-release-ipa
           path: build/ios/ipa
