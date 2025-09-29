@@ -14,10 +14,10 @@ on:
       - developer
 
 jobs:
-  # Single Job: শুধুমাত্র APK এবং IPA ফাইল তৈরি করবে
+  # Single Job: শুধুমাত্র APK ফাইল তৈরি করবে
   minimal_build:
     name: 🏗️ Build APK
-    runs-on: macos-latest # iOS বিল্ডের জন্য macos রানার আবশ্যক
+    runs-on: ubuntu-latest # iOS বিল্ড না থাকার কারণে macos-এর পরিবর্তে Ubuntu ব্যবহার করা হলো (কম খরচে দ্রুত রান হয়)
     
     steps:
       - name: Checkout Code
@@ -50,7 +50,3 @@ jobs:
         with:
           name: android-release-apk
           path: build/app/outputs/apk/release
-          
-        with:
-          name: ios-release-ipa
-          path: build/ios/ipa
