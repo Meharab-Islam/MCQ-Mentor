@@ -71,9 +71,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # --- Android Build (APK & AAB) ---
-      - name: Build Android App Bundle (AAB for Play Store)
-        run: flutter build appbundle --release
+      # --- Android Build (APK) ---
+      # AAB বিল্ডের ধাপটি (Build Android App Bundle) আপনার অনুরোধ অনুযায়ী বাদ দেওয়া হলো।
         
       - name: Build Android APK (for direct distribution)
         run: flutter build apk --release --split-per-abi
@@ -95,7 +94,5 @@ jobs:
           draft: true # প্রথমে Draft রিলিজ হিসেবে তৈরি হবে
           prerelease: ${{ github.ref_name != 'main' }} # Main ছাড়া অন্য সব ব্রাঞ্চ Prerelease
           files: |
-            build/app/outputs/bundle/release/*.aab
-            build/app/outputs/apk/release/*.apk
+            build/app/outputs/apk/release/*.apk  # শুধুমাত্র APK ফাইল রাখা হলো
             build/ios/ipa/*.ipa
-        # 'env' ব্লকটি অপ্রয়োজনীয়, তাই এটি সরানো হলো।
