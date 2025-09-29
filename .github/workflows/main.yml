@@ -50,3 +50,19 @@ jobs:
         with:
           name: android-release-apk
           path: build/app/outputs/apk/release
+
+      # 4. GitHub Release তৈরি করা হলো (নতুন ধাপ)
+      - name: Create GitHub Release
+        # শুধুমাত্র main বা master এ push হলেই রিলিজ তৈরি হবে
+        if: startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/master')
+        uses: softprops/action-gh-release@v1
+        with:
+          # বিল্ট-ইন GITHUB_TOKEN ব্যবহার করা হলো
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # ট্যাগ নেম সেট করা হলো (যেমন: v1.0.1, v1.0.2 ইত্যাদি)
+          tag_name: v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }} (${{ github.ref_name }})
+          body: Automated APK build for branch `${{ github.ref_name }}`.
+          draft: true # প্রথমে Draft রিলিজ হিসেবে তৈরি হবে
+          prerelease: ${{ github.ref_name != 'main' && github.ref_name != 'master' }} # main/master ছাড়া অন্য ব্রাঞ্চ (যেমন developer) এর জন্য Prerelease
+          files: build/app/outputs/apk/release/*.apk
