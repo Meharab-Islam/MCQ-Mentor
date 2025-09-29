@@ -1,13 +1,12 @@
 name: Flutter CI/CD
 
+# Workflowটি কখন ট্রিগার হবে
 on:
-  # CI (Test & Analyze)
   pull_request:
     branches:
       - main
       - master
       - develop
-  # CD (Build & Release) - শুধুমাত্র develop, main, master-এ push/merge হলেই রিলিজ হবে।
   push:
     branches:
       - main
@@ -15,77 +14,88 @@ on:
       - develop
 
 jobs:
+  # 1. CI Job: কোড টেস্ট এবং অ্যানালাইজ করার জন্য (Ubuntu ব্যবহার করে, যা দ্রুত ও সস্তা)
   test_and_analyze:
-    name: Test & Analyze
-    runs-on: ubuntu-latest # টেস্ট করার জন্য macos-এর প্রয়োজন নেই, ubuntu দ্রুত এবং সস্তা।
-    steps:
-      - uses: actions/checkout@v4 # V4 ব্যবহার করুন
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Format Check
-        run: dart format --set-exit-if-changed .
-
-      - name: Static Analysis
-        run: flutter analyze
-
-      - name: Run Unit Tests
-        run: flutter test
-
-  build_and_release:
-    name: Build & Release
-    needs: test_and_analyze # টেস্ট সফল হলেই এই জবটি রান হবে
-    runs-on: macos-latest # iOS বিল্ডের জন্য macos-latest দরকার
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    name: 🧪 Test & Analyze (CI)
+    runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      # Flutter SDK সেটআপ
+      - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          
-      - name: Set up Java
-        uses: actions/setup-java@v4 # V4 ব্যবহার করুন
-        with:
-          distribution: 'temurin' # Zulu-এর পরিবর্তে জনপ্রিয় Temurin
-          java-version: '17' # Android বিল্ডের জন্য Java 17 বা 11 ব্যবহার করুন
 
       - name: Install dependencies
         run: flutter pub get
 
-      # --- Android Build (AAB for Play Store) ---
-      - name: Build Android App Bundle (AAB)
-        run: flutter build appbundle --release
-      
-      # --- iOS Build (IPA) ---
-      # আপনার IPA তৈরি করার পদ্ধতিটি পুরানো এবং ত্রুটিপূর্ণ হতে পারে। 
-      # এটি iOS কোড সাইনিং ছাড়া শুধুমাত্র একটি আনসাইনড .app ফোল্ডার জিপ করে।
-      # TestFlight/App Store-এর জন্য কোড সাইনিং সহ একটি সঠিক IPA প্রয়োজন। 
-      - name: Build iOS
-        run: flutter build ipa --release --export-options-plist=<Path_to_ExportOptions.plist> # সঠিকভাবে IPA তৈরির জন্য export-options-plist প্রয়োজন।
+      - name: Check Code Formatting
+        # যদি কোনো ফরমেটিং পরিবর্তন হয়, তবে ফেইল করবে
+        run: dart format --set-exit-if-changed .
 
-      - name: Package iOS Build for Release
-        run: |
-          # যদি আপনার কাছে সঠিক IPA তৈরির প্রক্রিয়া না থাকে, তাহলে IPA তৈরির ধাপটি জটিল।
-          # সঠিক পদ্ধতির জন্য Fastlane বা আরও উন্নত অ্যাকশন ব্যবহার করা উচিত।
-          # তবে যদি আপনি শুধু একটি আনসাইনড .app আর্টিফ্যাক্ট চান, তাহলে APK-এর সাথে একটি সহজ জিপ করতে পারেন।
-          # বর্তমান ক্ষেত্রে, আমরা ধরে নিচ্ছি আপনি শুধু APK রিলিজ করবেন, অথবা আইওএস বিল্ড ফেইল হতে পারে।
-          
-      - name: Push to Releases
-        uses: softprops/action-gh-release@v1 # ncipollo-এর একটি জনপ্রিয় বিকল্প
+      - name: Analyze Project Source
+        # Flutter-এর জন্য dart analyze নয়, flutter analyze ব্যবহার করা ভালো
+        run: flutter analyze
+
+      - name: Run Flutter Tests
+        run: flutter test
+
+  # 2. CD Job: টেস্ট সফল হলে বিল্ড এবং রিলিজ করার জন্য (iOS-এর জন্য macos-latest প্রয়োজন)
+  build_and_release:
+    name: 🚀 Build & Release (CD)
+    needs: test_and_analyze # শুধুমাত্র আগের জব সফল হলেই রান হবে
+    runs-on: macos-latest # iOS বিল্ডের জন্য macos রানার আবশ্যক
+    
+    # শুধুমাত্র push ইভেন্টে এবং নির্দিষ্ট ব্রাঞ্চগুলিতেই রিলিজ হবে
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
         with:
+          channel: 'stable'
+
+      - name: Set up Java (for Android Build)
+        # Android বিল্ডের জন্য আধুনিক Java ভার্সন (17) ব্যবহার করুন
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' 
+          
+      - name: Install dependencies
+        run: flutter pub get
+
+      # --- Android Build (APK & AAB) ---
+      - name: Build Android App Bundle (AAB for Play Store)
+        run: flutter build appbundle --release
+        
+      - name: Build Android APK (for direct distribution)
+        run: flutter build apk --release --split-per-abi
+
+      # --- iOS Build (IPA) ---
+      - name: Build iOS IPA
+        run: flutter build ipa --release 
+
+      # রিলিজ তৈরি এবং Artifacts আপলোড
+      - name: Push to GitHub Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          # বিল্ট-ইন GITHUB_TOKEN ব্যবহার করা হলো। এর জন্য ম্যানুয়ালি সিক্রেট তৈরি করার দরকার নেই।
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # ব্রাঞ্চ অনুযায়ী ট্যাগ তৈরি: main এর জন্য v1.0.X, develop এর জন্য v1.0.X-develop
           tag_name: ${{ github.ref_name == 'main' && format('v1.0.{0}', github.run_number) || format('v1.0.{0}-{1}', github.run_number, github.ref_name) }}
           name: Release v1.0.${{ github.run_number }} (${{ github.ref_name }})
-          body: Automated build from commit ${{ github.sha }}
-          draft: true # প্রথমে ড্রাফ্ট রিলিজ তৈরি করুন
-          prerelease: ${{ github.ref_name == 'develop' }} # develop ব্রাঞ্চের জন্য প্রি-রিলিজ
+          body: Automated Release for branch `${{ github.ref_name }}`.
+          draft: true # প্রথমে Draft রিলিজ হিসেবে তৈরি হবে
+          prerelease: ${{ github.ref_name != 'main' }} # Main ছাড়া অন্য সব ব্রাঞ্চ Prerelease
           files: |
-            build/app/outputs/bundle/release/app-release.aab
-            build/app/outputs/apk/release/app-release.apk
-            # বিল্ড সফল হলে build/ios/ipa/Runner.ipa যোগ করুন
+            build/app/outputs/bundle/release/*.aab
+            build/app/outputs/apk/release/*.apk
+            build/ios/ipa/*.ipa
+        # 'env' ব্লকটি অপ্রয়োজনীয়, তাই এটি সরানো হলো।
