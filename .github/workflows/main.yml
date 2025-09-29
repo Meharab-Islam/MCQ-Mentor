@@ -33,8 +33,9 @@ jobs:
         run: flutter pub get
 
       - name: Check Code Formatting
-        # যদি কোনো ফরমেটিং পরিবর্তন হয়, তবে ফেইল করবে
-        run: dart format --set-exit-if-changed .
+        # যদি কোনো ফরমেটিং পরিবর্তন হয়, তবে ফেইল করবে।
+        # স্থানীয়ভাবে `flutter format .` রান করে পরিবর্তন কমিট করলে এই ধাপ সফল হবে।
+        run: flutter format --set-exit-if-changed . # <--- dart format এর পরিবর্তে flutter format ব্যবহার করা হলো
 
       - name: Analyze Project Source
         # Flutter-এর জন্য dart analyze নয়, flutter analyze ব্যবহার করা ভালো
