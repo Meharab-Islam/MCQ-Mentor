@@ -1,4 +1,4 @@
-name: Flutter CI/CD
+name: Flutter Minimal Build Only
 
 # Workflowটি কখন ট্রিগার হবে
 on:
@@ -14,82 +14,49 @@ on:
       - develop
 
 jobs:
-  # 1. CI Job: কোড টেস্ট এবং অ্যানালাইজ করার জন্য (Ubuntu ব্যবহার করে, যা দ্রুত ও সস্তা)
-  test_and_analyze:
-    name: 🧪 Test & Analyze (CI)
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Flutter SDK সেটআপ
-      - name: Set up Flutter SDK
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      # --- Check Code Formatting ধাপটি আপনার অনুরোধ অনুযায়ী বাদ দেওয়া হলো ---
-
-      - name: Analyze Project Source
-        # Flutter-এর জন্য dart analyze নয়, flutter analyze ব্যবহার করা ভালো
-        run: flutter analyze
-
-      - name: Run Flutter Tests
-        run: flutter test
-
-  # 2. CD Job: টেস্ট সফল হলে বিল্ড এবং রিলিজ করার জন্য (iOS-এর জন্য macos-latest প্রয়োজন)
-  build_and_release:
-    name: 🚀 Build & Release (CD)
-    needs: test_and_analyze # শুধুমাত্র আগের জব সফল হলেই রান হবে
+  # Single Job: শুধুমাত্র APK এবং IPA ফাইল তৈরি করবে
+  minimal_build:
+    name: 🏗️ Build APK and IPA
     runs-on: macos-latest # iOS বিল্ডের জন্য macos রানার আবশ্যক
     
-    # শুধুমাত্র push ইভেন্টে এবং নির্দিষ্ট ব্রাঞ্চগুলিতেই রিলিজ হবে
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
-    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 1. Set up Flutter SDK (MANDATORY)
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Set up Java (for Android Build)
-        # Android বিল্ডের জন্য আধুনিক Java ভার্সন (17) ব্যবহার করুন
+      # 2. Set up Java (for Android Build)
+      # Android APK তৈরি করার জন্য Java 17 প্রয়োজন
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17' 
           
-      - name: Install dependencies
+      - name: Install dependencies (MANDATORY before build)
         run: flutter pub get
 
-      # --- Android Build (APK) ---
-        
-      - name: Build Android APK (for direct distribution)
+      # --- 3. Build APK ---
+      - name: Build Android APK
         run: flutter build apk --release --split-per-abi
 
-      # --- iOS Build (IPA) ---
+      # --- 4. Build iOS IPA ---
       - name: Build iOS IPA
         run: flutter build ipa --release 
 
-      # রিলিজ তৈরি এবং Artifacts আপলোড
-      - name: Push to GitHub Releases
-        uses: softprops/action-gh-release@v1
+      # Artifacts আপলোড (ঐচ্ছিক, ফাইলগুলো GitHub-এ সংরক্ষণের জন্য)
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
-          # বিল্ট-ইন GITHUB_TOKEN ব্যবহার করা হলো। এর জন্য ম্যানুয়ালি সিক্রেট তৈরি করার দরকার নেই।
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # ব্রাঞ্চ অনুযায়ী ট্যাগ তৈরি: main এর জন্য v1.0.X, develop এর জন্য v1.0.X-develop
-          tag_name: ${{ github.ref_name == 'main' && format('v1.0.{0}', github.run_number) || format('v1.0.{0}-{1}', github.run_number, github.ref_name) }}
-          name: Release v1.0.${{ github.run_number }} (${{ github.ref_name }})
-          body: Automated Release for branch `${{ github.ref_name }}`.
-          draft: true # প্রথমে Draft রিলিজ হিসেবে তৈরি হবে
-          prerelease: ${{ github.ref_name != 'main' }} # Main ছাড়া অন্য সব ব্রাঞ্চ Prerelease
-          files: |
-            build/app/outputs/apk/release/*.apk  # শুধুমাত্র APK ফাইল রাখা হলো
-            build/ios/ipa/*.ipa
+          name: android-release-apk
+          path: build/app/outputs/apk/release
+          
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: build/ios/ipa
