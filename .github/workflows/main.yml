@@ -1,49 +1,91 @@
+name: Flutter CI/CD
+
 on:
+  # CI (Test & Analyze)
   pull_request:
     branches:
       - main
       - master
+      - develop
+  # CD (Build & Release) - শুধুমাত্র develop, main, master-এ push/merge হলেই রিলিজ হবে।
   push:
     branches:
       - main
       - master
       - develop
-name: "Build & Release"
+
 jobs:
-  build:
-    name: Build & Release
-    runs-on: macos-latest
+  test_and_analyze:
+    name: Test & Analyze
+    runs-on: ubuntu-latest # টেস্ট করার জন্য macos-এর প্রয়োজন নেই, ubuntu দ্রুত এবং সস্তা।
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '12'
+      - uses: actions/checkout@v4 # V4 ব্যবহার করুন
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          architecture: x64
 
-      - run: flutter build apk --release --split-per-abi
-      - run: |
-          flutter build ios --no-codesign
-          cd build/ios/iphoneos
-          mkdir Payload
-          cd Payload
-          ln -s ../Runner.app
-          cd ..
-          zip -r app.ipa Payload
-      - name: Push to Releases
-        uses: ncipollo/release-action@v1
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format Check
+        run: dart format --set-exit-if-changed .
+
+      - name: Static Analysis
+        run: flutter analyze
+
+      - name: Run Unit Tests
+        run: flutter test
+
+  build_and_release:
+    name: Build & Release
+    needs: test_and_analyze # টেস্ট সফল হলেই এই জবটি রান হবে
+    runs-on: macos-latest # iOS বিল্ডের জন্য macos-latest দরকার
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          artifacts: "build/app/outputs/apk/release/*,build/ios/iphoneos/app.ipa"
-          tag: v1.0.${{ github.run_number }}
-          token: ${{ secrets.TOKEN }}
+          channel: 'stable'
+          
+      - name: Set up Java
+        uses: actions/setup-java@v4 # V4 ব্যবহার করুন
+        with:
+          distribution: 'temurin' # Zulu-এর পরিবর্তে জনপ্রিয় Temurin
+          java-version: '17' # Android বিল্ডের জন্য Java 17 বা 11 ব্যবহার করুন
 
+      - name: Install dependencies
+        run: flutter pub get
 
+      # --- Android Build (AAB for Play Store) ---
+      - name: Build Android App Bundle (AAB)
+        run: flutter build appbundle --release
+      
+      # --- iOS Build (IPA) ---
+      # আপনার IPA তৈরি করার পদ্ধতিটি পুরানো এবং ত্রুটিপূর্ণ হতে পারে। 
+      # এটি iOS কোড সাইনিং ছাড়া শুধুমাত্র একটি আনসাইনড .app ফোল্ডার জিপ করে।
+      # TestFlight/App Store-এর জন্য কোড সাইনিং সহ একটি সঠিক IPA প্রয়োজন। 
+      - name: Build iOS
+        run: flutter build ipa --release --export-options-plist=<Path_to_ExportOptions.plist> # সঠিকভাবে IPA তৈরির জন্য export-options-plist প্রয়োজন।
 
-
-
-
-# push to master, main, develop
-# pull request on main master
+      - name: Package iOS Build for Release
+        run: |
+          # যদি আপনার কাছে সঠিক IPA তৈরির প্রক্রিয়া না থাকে, তাহলে IPA তৈরির ধাপটি জটিল।
+          # সঠিক পদ্ধতির জন্য Fastlane বা আরও উন্নত অ্যাকশন ব্যবহার করা উচিত।
+          # তবে যদি আপনি শুধু একটি আনসাইনড .app আর্টিফ্যাক্ট চান, তাহলে APK-এর সাথে একটি সহজ জিপ করতে পারেন।
+          # বর্তমান ক্ষেত্রে, আমরা ধরে নিচ্ছি আপনি শুধু APK রিলিজ করবেন, অথবা আইওএস বিল্ড ফেইল হতে পারে।
+          
+      - name: Push to Releases
+        uses: softprops/action-gh-release@v1 # ncipollo-এর একটি জনপ্রিয় বিকল্প
+        with:
+          tag_name: ${{ github.ref_name == 'main' && format('v1.0.{0}', github.run_number) || format('v1.0.{0}-{1}', github.run_number, github.ref_name) }}
+          name: Release v1.0.${{ github.run_number }} (${{ github.ref_name }})
+          body: Automated build from commit ${{ github.sha }}
+          draft: true # প্রথমে ড্রাফ্ট রিলিজ তৈরি করুন
+          prerelease: ${{ github.ref_name == 'develop' }} # develop ব্রাঞ্চের জন্য প্রি-রিলিজ
+          files: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/apk/release/app-release.apk
+            # বিল্ড সফল হলে build/ios/ipa/Runner.ipa যোগ করুন
