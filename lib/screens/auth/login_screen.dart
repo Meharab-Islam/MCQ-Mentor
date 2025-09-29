@@ -1,0 +1,135 @@
+import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:mcq_mentor/controller/auth/login_controller.dart';
+import 'package:mcq_mentor/screens/auth/forget_password_screen.dart';
+import 'package:mcq_mentor/screens/auth/registration_screen.dart';
+import 'package:mcq_mentor/widget/logo.dart';
+import 'package:mcq_mentor/widget/primary_button.dart';
+import 'package:mcq_mentor/widget/textfield.dart';
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    LoginController controller = Get.find<LoginController>();
+
+    // Access the current theme's color scheme
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDarkMode
+        ? colorScheme.primary
+        : colorScheme.background;
+
+    final loaderColor = isDarkMode
+        ? colorScheme.onPrimary
+        : colorScheme.onPrimary;
+
+    return GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(), // ✅ dismiss keyboard
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: ColorfulSafeArea(
+          color: backgroundColor,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Gap(120.h),
+                    const LogoWidget(),
+                    Gap(20.h),
+                    Text(
+                      'Your Ultimate MCQ Preparation Companion',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w400,
+                        color: colorScheme.onBackground.withOpacity(0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Gap(20.h),
+                    CustomTextField(
+                      hintText: 'Enter your email',
+      
+                      controller: controller.emailController,
+                    ),
+                    Gap(10.h),
+                    CustomTextField(
+                      hintText: 'Enter your password',
+      
+                      controller: controller.passwordController,
+                      isPassword: true,
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Get.to(() => ForgotPasswordScreen());
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: colorScheme.onBackground.withOpacity(0.7),
+                            fontSize: 14.sp,
+                            decoration: TextDecoration.underline,
+                            decorationColor: colorScheme.onBackground,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return  CircularProgressIndicator(
+                          color: loaderColor,
+                        );
+                      } else {
+                        return PrimaryButton(
+                          onTap: () {
+                            controller.login();
+                          },
+                          title: 'Login',
+                        );
+                      }
+                    }),
+                    Gap(10.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account?",
+                          style: TextStyle(
+                            color: colorScheme.onBackground.withOpacity(0.7),
+                            fontSize: 13.sp,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Get.to(() => const RegistrationScreen());
+                          },
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
