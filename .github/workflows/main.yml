@@ -32,10 +32,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Check Code Formatting
-        # যদি কোনো ফরমেটিং পরিবর্তন হয়, তবে ফেইল করবে।
-        # স্থানীয়ভাবে `flutter format .` রান করে পরিবর্তন কমিট করলে এই ধাপ সফল হবে।
-        run: flutter format --set-exit-if-changed . # <--- dart format এর পরিবর্তে flutter format ব্যবহার করা হলো
+      # --- Check Code Formatting ধাপটি আপনার অনুরোধ অনুযায়ী বাদ দেওয়া হলো ---
 
       - name: Analyze Project Source
         # Flutter-এর জন্য dart analyze নয়, flutter analyze ব্যবহার করা ভালো
@@ -73,7 +70,6 @@ jobs:
         run: flutter pub get
 
       # --- Android Build (APK) ---
-      # AAB বিল্ডের ধাপটি (Build Android App Bundle) আপনার অনুরোধ অনুযায়ী বাদ দেওয়া হলো।
         
       - name: Build Android APK (for direct distribution)
         run: flutter build apk --release --split-per-abi
