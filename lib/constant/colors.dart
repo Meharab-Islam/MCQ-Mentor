@@ -50,6 +50,7 @@ class AppColorsDark {
 class AppTheme {
   /// The light theme for the application.
   static final ThemeData lightTheme = ThemeData(
+    scaffoldBackgroundColor: Colors.grey[100],
     brightness: Brightness.light,
     colorScheme: ColorScheme(
       primary: AppColorsLight.primary,

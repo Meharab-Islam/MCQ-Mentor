@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/screens/home/home_screen.dart';
+import 'package:mcq_mentor/screens/packages/package_list_screen.dart';
 import 'package:mcq_mentor/screens/profile/profile_screen.dart';
 import 'package:mcq_mentor/screens/quiz/quiz_form_screen.dart';
+import 'package:mcq_mentor/widget/custom_appbar.dart';
+import 'package:mcq_mentor/widget/custom_drawer.dart';
 
 
 
@@ -39,10 +42,12 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
      QuizMasterScreen(),
     const Placeholder(), 
     const HomeScreen(),
-    const Placeholder(), 
+    const PackageListScreen(isMain: true,), 
     const ProfileScreen(), 
     ];
     return Scaffold(
+      appBar: CustomAppbar(),
+      drawer: CustomDrawer(),
       body: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
@@ -60,13 +65,6 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
               shadowElevation: 5,
               kBottomRadius: 28.0,
 
-              // notchShader: const SweepGradient(
-              //   startAngle: 0,
-              //   endAngle: pi / 2,
-              //   colors: [Colors.red, Colors.green, Colors.orange],
-              //   tileMode: TileMode.mirror,
-              // ).createShader(Rect.fromCircle(center: Offset.zero, radius: 8.0)),
-              // notchColor: Theme.of(context).colorScheme.onPrimary,
               notchColor: Colors.blue.shade700,
 
               /// restart app if you change removeMargins
@@ -107,29 +105,29 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
                     Icons.house_rounded,
                       color: Theme.of(context).colorScheme.primary,
                   ),
-                  itemLabel: 'Page 3',
+                  itemLabel: 'Home',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
-                    Icons.architecture_sharp,
+                    Icons.workspace_premium_outlined,
                      color: Theme.of(context).colorScheme.primary,
                   ),
                   activeItem: Icon(
-                    Icons.architecture_sharp,
+                    Icons.workspace_premium_outlined,
                       color: Theme.of(context).colorScheme.primary,
                   ),
-                  itemLabel: 'Page 4',
+                  itemLabel: 'Packages',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
-                    Icons.person,
+                    Icons.people_outline,
                       color: Theme.of(context).colorScheme.primary,
                   ),
                   activeItem: Icon(
-                    Icons.person,
+                    Icons.people_outline,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  itemLabel: 'Page 5',
+                  itemLabel: 'Profile',
                 ),
               ],
               onTap: (index) {

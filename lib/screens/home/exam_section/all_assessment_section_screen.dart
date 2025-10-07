@@ -15,7 +15,9 @@ class AllAssessmentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AssessmentController());
- final SingleExamSectionController singleExamSectionController = Get.put(SingleExamSectionController());
+    final SingleExamSectionController singleExamSectionController = Get.put(
+      SingleExamSectionController(),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +34,8 @@ class AllAssessmentScreen extends StatelessWidget {
         return GridView.builder(
           controller: controller.scrollController,
           padding: const EdgeInsets.all(12),
-          itemCount: controller.examSections.length +
+          itemCount:
+              controller.examSections.length +
               (controller.hasNextPage.value ? 1 : 0), // Extra item for loader
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -46,36 +49,47 @@ class AllAssessmentScreen extends StatelessWidget {
               final isLive = section.live ?? false;
 
               return Bounceable(
-                 onTap: () async {
-      // Show loader
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
+                onTap: () async {
+                  // Show loader
+                  Get.dialog(
+                    const Center(child: CircularProgressIndicator()),
+                    barrierDismissible: false,
+                  );
 
-      // singleExamSectionController.examId = section.id.toString();
-      // Fetch exam section data
-      await singleExamSectionController.fetchExamSections(section.id.toString());
+                  // singleExamSectionController.examId = section.id.toString();
+                  // Fetch exam section data
+                  await singleExamSectionController.fetchExamSections(
+                    section.id.toString(),
+                  );
 
-      // Close loader
-      if (Get.isDialogOpen!) {
-        Get.back();
-      }
+                  // Close loader
+                  if (Get.isDialogOpen!) {
+                    Get.back();
+                  }
 
-      // Navigate based on API response
-      if (singleExamSectionController.examSections.value?.category == false) {
-        Get.to(() => WeeklyModelTestScreen(
-          examCategoryId: '',
-          examSectionId: section.id.toString(),
-          title: section.name.toString(),
-          description: section.description.toString(),
-        ));
-      } else {
-        Get.to(() => CategorySectionListScreen(
-            examSectionId: section.id!,
-            ));
-      }
-    },
+                  // Navigate based on API response
+                  if (singleExamSectionController
+                          .examSections
+                          .value
+                          ?.category ==
+                      false) {
+                    Get.to(
+                      () => WeeklyModelTestScreen(
+                        pdf:
+                            singleExamSectionController.examSections.value!.pdf,
+                        examCategoryId: '',
+                        examSectionId: section.id.toString(),
+                        title: section.name.toString(),
+                        description: section.description.toString(),
+                      ),
+                    );
+                  } else {
+                    Get.to(
+                      () =>
+                          CategorySectionListScreen(examSectionId: section.id!),
+                    );
+                  }
+                },
                 child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

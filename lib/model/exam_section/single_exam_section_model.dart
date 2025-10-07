@@ -2,12 +2,13 @@
 class SingleExamDetailsResponse {
   final String message;
   final ExamSectionData data;
-
+  final bool pdf;
   final bool category;
 
   SingleExamDetailsResponse({
     required this.message,
     required this.data,
+    required this.pdf,
     required this.category
 
   });
@@ -16,6 +17,7 @@ class SingleExamDetailsResponse {
     return SingleExamDetailsResponse(
       message: json['message'] ?? "",
       data: ExamSectionData.fromJson(json['data'] ?? {}),
+      pdf: json['pdf'],
       category: json['category']
     );
   }
@@ -25,6 +27,7 @@ class SingleExamDetailsResponse {
       "message": message,
       "data": data.toJson(),
       "category": category,
+      "pdf":pdf,
     };
   }
 }

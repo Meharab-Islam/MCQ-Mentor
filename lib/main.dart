@@ -34,20 +34,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
+    // final themeController = Get.find<ThemeController>();
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       builder: (context, child) {
-        return Obx(() => GetMaterialApp(
+        return  GetMaterialApp(
               title: 'Flutter Demo',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: themeController.theme, // ✅ reactive theme
+          
+              // themeMode: themeController.theme, // ✅ reactive theme
+              themeMode: ThemeMode.light, // ✅ reactive theme
               initialBinding: AppBinding(),
               home: const AuthCheckScreen(),
-            ));
+            );
       },
     );
   }
@@ -79,6 +80,7 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
 
     if (token != null) {
       // User is logged in, navigate to HomeScreen
+      // Get.off(() => const CustomBottomNavBarScreen());
       Get.off(() => const CustomBottomNavBarScreen());
     } else {
       // User not logged in, navigate to LoginScreen

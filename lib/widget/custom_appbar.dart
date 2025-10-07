@@ -2,11 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:mcq_mentor/constant/images.dart';
 import 'package:mcq_mentor/controller/theme_controller.dart';
+import 'package:mcq_mentor/screens/notification/notification_screen.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppbar({super.key});
+  final String title;
+  const CustomAppbar({super.key, this.title = "MCQ Mentor"});
 
   @override
   Widget build(BuildContext context) {
@@ -14,28 +18,22 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       centerTitle: false,
-      title: Text(
-        "MCQ Mentor",
-        style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.normal),
+      title: Row(
+        children: [
+          Image.asset(AppImages.hat,width: 40,height: 30,),
+          Gap(5.w),
+          Text(
+            title,
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.normal),
+          ),
+        ],
       ),
       actions: [
-        // Toggle Theme Button
-        // Obx(() => IconButton(
-        //       icon: Icon(
-        //         themeController.isDarkMode.value
-        //             ? Icons.wb_sunny
-        //             : Icons.dark_mode,
-        //       ),
-        //       onPressed: () => themeController.toggleTheme(),
-        //     )),
-
-        // Notifications Button
+        
         IconButton(
           icon: const Icon(Icons.notifications),
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No new notifications')),
-            );
+           Get.to(()=> NotificationScreen());
           },
         ),
       ],

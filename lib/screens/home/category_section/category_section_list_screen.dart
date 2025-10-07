@@ -27,7 +27,7 @@ class CategorySectionListScreen extends StatelessWidget {
         final categoryList = allCategoryListController.categoryList.value;
 
         if (allCategoryListController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator.adaptive());
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
         } else if (categoryList.isEmpty) {
           return const Center(child: Text("No Data found"));
         } else {
@@ -36,35 +36,6 @@ class CategorySectionListScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// Title
-                // Text(
-                //   categoryList.name,
-                //   style: TextStyle(
-                //     fontSize: 20.sp,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
-                // Gap(5.h),
-
-                /// Description box
-                // Container(
-                //   width: double.infinity,
-                //   padding: EdgeInsets.all(10.sp),
-                //   decoration: BoxDecoration(
-                //     color: Colors.amber,
-                //     borderRadius: BorderRadius.circular(10.r),
-                //   ),
-                //   child: Center(
-                //     child: Text(
-                //       examData.data.description == null ? "No description available": examData.data.description.toString(),
-                //       textAlign: TextAlign.center,
-                //       style: const TextStyle(color: Colors.black),
-                //     ),
-                //   ),
-                // ),
-                // Gap(10.h),
-
-                /// Category List
                 Expanded(
                   child: ListView.builder(
                     itemCount: categoryList.length,
@@ -106,16 +77,6 @@ class CategorySectionListScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // CircleAvatar(
-            //   backgroundColor: Theme.of(context).colorScheme.onPrimary,
-            //   child: Image.network(
-            //     iconUrl,
-            //     width: 24.w,
-            //     height: 24.h,
-            //     fit: BoxFit.contain,
-            //   ),
-            // ),
-            // Gap(12.w),
             Expanded(
               child: Text(
                 title,

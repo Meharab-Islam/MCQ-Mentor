@@ -2,11 +2,11 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:mcq_mentor/screens/home/exam_section/assessment_section_view.dart';
 import 'package:mcq_mentor/screens/home/exam_section/quiz_card.dart';
 import 'package:mcq_mentor/screens/home/study_sction/study_section_view.dart';
-import 'package:mcq_mentor/widget/custom_appbar.dart'; // Assumed from your code
-import 'package:mcq_mentor/widget/custom_drawer.dart'; // Assumed from your code
+import 'package:mcq_mentor/screens/packages/package_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,9 +14,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: const CustomAppbar(),
-      drawer: const CustomDrawer(),
+      // backgroundColor: Theme.of(context).colorScheme.background,
+      // appBar: const CustomAppbar(),
+      // drawer: const CustomDrawer(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: SingleChildScrollView(
@@ -118,7 +118,9 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(()=> PackageListScreen());
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade700,
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),

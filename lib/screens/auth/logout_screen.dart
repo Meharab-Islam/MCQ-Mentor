@@ -29,9 +29,9 @@ class LogoutScreen extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
           ),
-          child: const Text(
+          child: Text(
             'Logout',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, color: Get.theme.colorScheme.onPrimary),
           ),
         ),
       ),

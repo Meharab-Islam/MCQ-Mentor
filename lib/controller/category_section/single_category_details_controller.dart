@@ -24,6 +24,7 @@ class SingleCategoryDetailsController extends GetxController {
         examSections.value = SingleCategoryDetailsModel.fromJson(response.data);
       print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb$categoryId");
       Get.to(()=> WeeklyModelTestScreen(
+         pdf: examSections.value!.pdf,
         examSectionId: examSections.value!.data.id.toString(),
         examCategoryId: categoryId,
         title: examSections.value!.data.name,

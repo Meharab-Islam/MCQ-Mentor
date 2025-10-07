@@ -75,6 +75,7 @@ class AssessmentSectionView extends StatelessWidget {
       // Navigate based on API response
       if (singleExamSectionController.examSections.value?.category == false) {
         Get.to(() => WeeklyModelTestScreen(
+          pdf: singleExamSectionController.examSections.value!.pdf,
            examCategoryId: '',
           examSectionId: section.id.toString(),
            title: section.name.toString(),

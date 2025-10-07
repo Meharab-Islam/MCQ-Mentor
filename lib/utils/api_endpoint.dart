@@ -1,5 +1,6 @@
 class ApiEndpoint {
-  static const String baseUrl = 'http://192.168.110.188:8000/api';
+  // static const String baseUrl = 'http://192.168.110.188:8000/api';
+  static const String baseUrl = 'https://api.mcqmentor.com/mcq_web_app/public/api';
   static const String login = '$baseUrl/login';
   static const String register = '$baseUrl/register';
   static const String forgotPassword = '$baseUrl/forget-password';
@@ -13,4 +14,10 @@ class ApiEndpoint {
   static const String singleCategoryDetails = '$baseUrl/ExamCategory/';
   static const String examItemList = '$baseUrl/exam-item-list';
   static const String allRoutine = '$baseUrl/routines';
+  static const String subjectList = '$baseUrl/subject';
+  static const String allPDF = '$baseUrl/Pdf/';
+  static const String allQuestion = '$baseUrl/Question';
+  static const String studentProfile = '$baseUrl/student';
+  static const String packageList = '$baseUrl/package';
+  static const String packageDetail = '$baseUrl/package';
 }

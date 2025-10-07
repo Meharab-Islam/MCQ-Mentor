@@ -1,19 +1,19 @@
 class SingleCategoryDetailsModel {
   final String message;
   final ExamCategoryData data;
-  final bool routine;
+  final bool pdf;
 
   SingleCategoryDetailsModel({
     required this.message,
     required this.data,
-    required this.routine,
+    required this.pdf,
   });
 
   factory SingleCategoryDetailsModel.fromJson(Map<String, dynamic> json) {
     return SingleCategoryDetailsModel(
       message: json['message'] ?? '',
       data: ExamCategoryData.fromJson(json['data'] ?? {}),
-      routine: json['routine'] ?? false,
+      pdf: json['pdf'] ?? false,
     );
   }
 
@@ -21,7 +21,7 @@ class SingleCategoryDetailsModel {
     return {
       "message": message,
       "data": data.toJson(),
-      "routine": routine,
+      "pdf": pdf,
     };
   }
 }

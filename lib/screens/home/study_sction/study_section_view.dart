@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/study_section/study_section.dart';
+import 'package:mcq_mentor/screens/pdf/pdf_category_list_screen.dart';
 
 /// Study Section View (Grid of ListTile-like Cards)
 class StudySectionView extends StatelessWidget {
@@ -35,11 +36,54 @@ class StudySectionView extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   // Handle tap for each study section
-                  Get.snackbar(
-                    "Tapped",
-                    section["name"],
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
+                  switch (section['name']) {
+                    case "PDF Section":
+                      Get.to(PdfCategoryListScreen());
+                      break;
+                    case "Video Section":
+                      Get.snackbar(
+                      "Tapped",
+                      section["name"],
+                      snackPosition: SnackPosition.BOTTOM,
+                      );
+                      break;
+                    
+                    case "সংশোধনী পোস্ট":
+                    Get.snackbar(
+                      "Tapped",
+                      section["name"],
+                      snackPosition: SnackPosition.BOTTOM,
+                      );
+                      break;
+                    
+                    case "Audio Section":
+                    Get.snackbar(
+                      "Tapped",
+                      section["name"],
+                      snackPosition: SnackPosition.BOTTOM,
+                      );
+                      break;
+                    
+                    case "Study Group":
+                    Get.snackbar(
+                      "Tapped",
+                      section["name"],
+                      snackPosition: SnackPosition.BOTTOM,
+                      );
+                      break;
+                    
+                    case "Book Store":
+                    Get.snackbar(
+                      "Tapped",
+                      section["name"],
+                      snackPosition: SnackPosition.BOTTOM,
+                      );
+                      break;
+                    
+
+                    default:
+                  }
+                  
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mcq_mentor/controller/profile_section/profile_controller.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,50 +13,93 @@ class ProfileScreen extends StatelessWidget {
     final controller = Get.put(ProfileController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        foregroundColor: Get.theme.colorScheme.primary,
-        centerTitle: false,
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary,))
-        ],
-      ),
+    
       body: Obx(() {
+        // Show loader while loading
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        // Show error or empty state if profile not loaded
+        if (controller.studentProfile.value == null) {
+          return const Center(
+            child: Text("No profile data found"),
+          );
+        }
+
+        final student = controller.studentProfile.value!;
+
         return SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User Info Section
+              /// ======== USER INFO SECTION ========
               Row(
                 children: [
-                  Container(
-                    height: 150.h,
-                    width: 120.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      image: DecorationImage(image: controller.user['image'] != null
-                        ? NetworkImage(controller.user['image']!)
-                        : const AssetImage('assets/default_user.png') as ImageProvider,fit: BoxFit.cover)
-                    ),
-                  
-                  ),
+                
+ClipRRect(
+      borderRadius: BorderRadius.circular(10.r),
+      child: CachedNetworkImage(
+        imageUrl: student.image.isNotEmpty
+            ? student.image
+            : 'https://i.pinimg.com/564x/39/33/f6/3933f64de1724bb67264818810e3f2cb.jpg',
+        height: 150.h,
+        width: 120.w,
+        fit: BoxFit.cover,
+
+        // While loading
+        placeholder: (context, url) => Container(
+          height: 150.h,
+          width: 120.w,
+          alignment: Alignment.center,
+          color: Colors.grey.shade200,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Get.theme.colorScheme.onPrimary,
+          ),
+        ),
+
+        // On error
+        errorWidget: (context, url, error) => Container(
+          height: 150.h,
+          width: 120.w,
+          alignment: Alignment.center,
+          color: Colors.grey.shade200,
+          child: const Icon(
+            Icons.broken_image_outlined,
+            color: Colors.redAccent,
+            size: 40,
+          ),
+        ),
+      ),),
+  
+
+
                   SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          controller.user['name']!,
-                          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+                          student.name,
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         SizedBox(height: 4.h),
-                        Text(controller.user['email']!, style: TextStyle(fontSize: 14.sp)),
+                        Text(student.email, style: TextStyle(fontSize: 14.sp)),
                         SizedBox(height: 4.h),
-                        Text("Phone: ${controller.user['phone']}", style: TextStyle(fontSize: 14.sp)),
+                        Text("Phone: ${student.phone}",
+                            style: TextStyle(fontSize: 14.sp)),
                         SizedBox(height: 4.h),
-                        Text("Gender: ${controller.user['gender']}, Age: ${controller.user['age']}", style: TextStyle(fontSize: 14.sp)),
+                        Text(
+                          "Gender: ${student.gender}, Age: ${student.age}",
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
                       ],
                     ),
                   ),
@@ -62,77 +107,98 @@ class ProfileScreen extends StatelessWidget {
               ),
               SizedBox(height: 24.h),
 
-              // Address & DOB
+              /// ======== ADDRESS & DOB ========
               Text(
-                "Address: ${controller.user['address']}",
+                "Address: ${student.address}",
                 style: TextStyle(fontSize: 14.sp),
               ),
               SizedBox(height: 4.h),
               Text(
-                "Date of Birth: ${controller.user['date_of_birth']}",
+               "Date of Birth: ${_formatDate(student.dateOfBirth.toString())}",
                 style: TextStyle(fontSize: 14.sp),
               ),
               SizedBox(height: 24.h),
 
-              // Packages Section
-              Text("Packages", style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              SizedBox(height: 12.h),
-           Column(
-  children: controller.packages.map<Widget>((package) {
-    return Card(
-      elevation: 2,
-      margin: EdgeInsets.symmetric(vertical: 6.h),
-      child: ListTile(
-        title: Text(
-          package['name'],
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text("Expiry: ${package['expiry']}"),
-        leading: const Icon(Icons.card_membership, color: Colors.blueAccent),
-      ),
-    );
-  }).toList(),
-),
+              /// ======== PACKAGES SECTION ========
+              // Text("Packages",
+              //     style:
+              //         TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+              // SizedBox(height: 12.h),
+              // Column(
+              //   children: controller.packages.map<Widget>((package) {
+              //     return Card(
+              //       elevation: 2,
+              //       margin: EdgeInsets.symmetric(vertical: 6.h),
+              //       child: ListTile(
+              //         title: Text(
+              //           package['name'] ?? '',
+              //           style: const TextStyle(fontWeight: FontWeight.bold),
+              //         ),
+              //         subtitle: Text("Expiry: ${package['expiry'] ?? 'N/A'}"),
+              //         leading: const Icon(Icons.card_membership,
+              //             color: Colors.blueAccent),
+              //       ),
+              //     );
+              //   }).toList(),
+              // ),
+              // SizedBox(height: 24.h),
 
-              SizedBox(height: 24.h),
+              // /// ======== EXAMS SECTION ========
+              // Text("Exams",
+              //     style:
+              //         TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+              // SizedBox(height: 12.h),
+              // ListView.builder(
+              //   shrinkWrap: true,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   itemCount: controller.exams.length,
+              //   itemBuilder: (context, index) {
+              //     final exam = controller.exams[index];
+              //     Color statusColor;
+              //     if (exam['status'] == "Completed") {
+              //       statusColor = Colors.green;
+              //     } else if (exam['status'] == "Pending") {
+              //       statusColor = Colors.orange;
+              //     } else {
+              //       statusColor = Colors.red;
+              //     }
 
-              // Exams Section
-              Text("Exams", style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-              SizedBox(height: 12.h),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.exams.length,
-                itemBuilder: (context, index) {
-                  final exam = controller.exams[index];
-                  Color statusColor;
-                  if (exam['status'] == "Completed") {
-                    statusColor = Colors.green;
-                  } else if (exam['status'] == "Pending") {
-                    statusColor = Colors.orange;
-                  } else {
-                    statusColor = Colors.red;
-                  }
-
-                  return Card(
-                    elevation: 2,
-                    margin: EdgeInsets.symmetric(vertical: 6.h),
-                    child: ListTile(
-                      title: Text(exam['title'], style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("Score: ${exam['score']}"),
-                      trailing: Text(
-                        exam['status'],
-                        style: TextStyle(fontWeight: FontWeight.bold, color: statusColor),
-                      ),
-                      leading: const Icon(Icons.school, color: Colors.blueAccent),
-                    ),
-                  );
-                },
-              ),
+              //     return Card(
+              //       elevation: 2,
+              //       margin: EdgeInsets.symmetric(vertical: 6.h),
+              //       child: ListTile(
+              //         title: Text(
+              //           exam['title'] ?? '',
+              //           style: const TextStyle(fontWeight: FontWeight.bold),
+              //         ),
+              //         subtitle: Text("Score: ${exam['score'] ?? 'N/A'}"),
+              //         trailing: Text(
+              //           exam['status'] ?? '',
+              //           style: TextStyle(
+              //               fontWeight: FontWeight.bold, color: statusColor),
+              //         ),
+              //         leading: const Icon(Icons.school,
+              //             color: Colors.blueAccent),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
         );
       }),
     );
   }
+
+  String _formatDate(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) return 'N/A';
+  try {
+    final date = DateTime.parse(dateStr);
+    return DateFormat('d MMM yyyy').format(date); // Example: 12 May 2003
+  } catch (e) {
+    return dateStr; // fallback if parse fails
+  }
+}
+
+
 }

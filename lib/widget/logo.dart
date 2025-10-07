@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mcq_mentor/constant/images.dart';
 
 /// A reusable widget for the app logo.
 class LogoWidget extends StatelessWidget {
@@ -17,7 +18,7 @@ class LogoWidget extends StatelessWidget {
         color: colorScheme.primary,
         borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
-          image: AssetImage('assets/images/logo.png'),
+          image: AssetImage(AppImages.logo),
           fit: BoxFit.cover,
         ),
         boxShadow: [

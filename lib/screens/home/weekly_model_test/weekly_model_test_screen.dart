@@ -3,7 +3,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:mcq_mentor/controller/exam_scction/exam_item_list_controller.dart';
+import 'package:mcq_mentor/screens/question/all_question_list_screen.dart';
 import 'package:mcq_mentor/screens/rotine/all_routine_screen.dart';
 import 'package:mcq_mentor/widget/custom_appbar.dart';
 
@@ -12,11 +12,12 @@ class WeeklyModelTestScreen extends StatelessWidget {
   final String description;
   final String examSectionId;
   final String examCategoryId;
+  final bool pdf;
 
   const WeeklyModelTestScreen({
     super.key,
     required this.description,
-    required this.title, required this.examSectionId, required this.examCategoryId,
+    required this.title, required this.examSectionId, required this.examCategoryId,required this.pdf,
   });
 
   @override
@@ -83,11 +84,13 @@ class WeeklyModelTestScreen extends StatelessWidget {
                          ));
                         }),
                         itemCard(context, icon: Icons.verified_outlined, title: 'Result'),
-                        itemCard(context, icon: Icons.archive_outlined, title: 'Archive'),
+                        itemCard(context, icon: Icons.archive_outlined, title: 'Archive', onTap: (){
+                          Get.to(()=> QuestionListPage());
+                        }),
                         itemCard(context, icon: Icons.favorite_border, title: 'Favorite'),
                         itemCard(context, icon: Icons.menu_book_rounded, title: 'Syllabus'),
                         itemCard(context, icon: Icons.merge_outlined, title: 'Merit List'),
-                        itemCard(context, icon: Icons.picture_as_pdf_outlined, title: 'PDFs'),
+                        pdf? itemCard(context, icon: Icons.picture_as_pdf_outlined, title: 'PDFs'):SizedBox(),
                     ],
                   ),
 

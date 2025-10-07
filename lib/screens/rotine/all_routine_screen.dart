@@ -210,7 +210,7 @@ class RoutineCard extends StatelessWidget {
                       fontSize: 13.sp,
                       color: Get.theme.colorScheme.onPrimary),
                 ),
-                Gap(24.w),
+                Gap(140.w),
                 Icon(Icons.score, size: 16.sp, color: Colors.blue),
                 Gap(6.w),
                 Text(

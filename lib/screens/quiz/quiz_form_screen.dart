@@ -16,8 +16,8 @@ class QuizMasterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: const CustomAppbar(),
-      drawer: const CustomDrawer(),
+      // appBar: const CustomAppbar(),
+      // drawer: const CustomDrawer(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.w),
         child: Column(
