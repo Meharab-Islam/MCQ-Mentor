@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sslcommerz/model/SSLCSdkType.dart';
+import 'package:flutter_sslcommerz/model/SSLCommerzInitialization.dart';
+import 'package:flutter_sslcommerz/model/SSLCurrencyType.dart';
+import 'package:flutter_sslcommerz/sslcommerz.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mcq_mentor/controller/packages/package_detail_controller.dart';
@@ -141,13 +147,8 @@ class PackageDetailScreen extends StatelessWidget {
                   ),
                   onPressed: () {
                     // TODO: Add payment or purchase logic here
-                    Get.snackbar(
-                      "Purchase",
-                      "Proceeding to purchase ${package.name}",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor:
-                          Get.theme.colorScheme.onPrimary.withOpacity(0.1),
-                    );
+                    double price = double.parse(package.price);
+                   sslcommerz(totalPrise: price);
                   },
                   child: Text(
                     "Purchase Now for ৳${package.price}",
@@ -165,4 +166,35 @@ class PackageDetailScreen extends StatelessWidget {
       }),
     );
   }
+  void sslcommerz({required double totalPrise}) async {
+  Sslcommerz sslcommerz = Sslcommerz(
+    initializer: SSLCommerzInitialization(
+      multi_card_name: "bkash,rocket",
+      currency: SSLCurrencyType.BDT,
+      product_category: "Digital Product",
+      sdkType: SSLCSdkType.TESTBOX,
+      store_id: "chudi68e82ba950be3",
+      store_passwd: "chudi68e82ba950be3@ssl",
+      total_amount: totalPrise,
+      tran_id: "TestTRX001",
+    ),
+  );
+
+  final response = await sslcommerz.payNow();
+
+  if (response.status == 'VALID') {
+    print(jsonEncode(response));
+
+    print('Payment completed, TRX ID: ${response.tranId}');
+    print(response.tranDate);
+  }
+
+  if (response.status == 'Closed') {
+    print('Payment closed');
+  }
+
+  if (response.status == 'FAILED') {
+    print('Payment failed');
+  }
+}
 }

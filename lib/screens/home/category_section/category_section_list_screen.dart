@@ -36,16 +36,18 @@ class CategorySectionListScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                
                 Expanded(
                   child: ListView.builder(
                     itemCount: categoryList.length,
                     itemBuilder: (context, index) {
                       final item = categoryList[index];
                       return Padding(
-                        padding: EdgeInsets.only(bottom: 10.h),
+                        padding: EdgeInsets.only(bottom: 5.h,top: 5.h),
                         child: itemCard(
                           context,
                           title: item.name,
+                          isLiive: item.live,
                           onTap: () {
                             singleCategoryDetailsController.fetchExamSections(item.id.toString());
                           },
@@ -65,6 +67,7 @@ class CategorySectionListScreen extends StatelessWidget {
   Widget itemCard(
     BuildContext context, {
     required String title,
+    required bool isLiive,
     required VoidCallback onTap,
   }) {
     return Bounceable(
@@ -84,9 +87,68 @@ class CategorySectionListScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            isLiive? AnimatedLiveDot():SizedBox(),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Animated pulsing + glowing green dot
+class AnimatedLiveDot extends StatefulWidget {
+  const AnimatedLiveDot({super.key});
+
+  @override
+  State<AnimatedLiveDot> createState() => AnimatedLiveDotState();
+}
+
+class AnimatedLiveDotState extends State<AnimatedLiveDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(
+      begin: 8,
+      end: 14,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          width: _animation.value,
+          height: _animation.value,
+          decoration: BoxDecoration(
+            color: Colors.green,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(0.6),
+                blurRadius: 8,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -10,15 +10,19 @@ class PdfListPage extends StatelessWidget {
   final controller = Get.put(PdfController());
   final pdfController = Get.put(PdfOpenDownloadController());
 
-  PdfListPage({super.key});
+  int categoryId;
+
+  PdfListPage({super.key, required this.categoryId});
 
   @override
   Widget build(BuildContext context) {
-    controller.fetchPdfList();
+    controller.fetchPdfList(categoryId);
 
     return Scaffold(
       backgroundColor: Get.theme.colorScheme.primary,
-      appBar: CustomAppbar(),
+      appBar: CustomAppbar(
+        title: "PDF List",
+      ),
       body: Obx(() {
         if (controller.isLoading.value) {
           return Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));

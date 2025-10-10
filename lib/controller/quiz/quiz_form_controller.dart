@@ -5,33 +5,22 @@ import 'package:mcq_mentor/screens/quiz/quiz_exam_screen.dart';
 class QuizFormController extends GetxController {
   // Observables for form fields
   var selectedQuestionType = 'Random Quiz [Total Database]'.obs;
-  var selectedSubject = 'সকল বিষয়'.obs;
+  var selectedSubject = ''.obs; // Will be set from SubjectListController
   final TextEditingController numberController = TextEditingController(text: '20');
   final TextEditingController timeController = TextEditingController(text: '5');
 
-  // Lists for dropdown menus
+  // List for question type dropdown
   final List<String> questionTypes = [
     'Random Quiz [Total Database]',
     'Subject-wise Quiz',
     'Topic-wise Quiz',
   ];
 
-  final List<String> subjects = [
-    'সকল বিষয়',
-    'বাংলা',
-    'English',
-    'গণিত',
-    'বিজ্ঞান',
-    // Add more subjects here
-  ];
-
-  // A method to start the quiz
+  // Method to start the quiz
   void startQuiz() {
-    // Get the values from the controllers
     final int numberOfQuestions = int.tryParse(numberController.text) ?? 0;
     final int examTime = int.tryParse(timeController.text) ?? 0;
 
-    // You can perform validation here, e.g., if number of questions > 0
     if (numberOfQuestions <= 0 || examTime <= 0) {
       Get.snackbar(
         'Invalid Input',
@@ -41,10 +30,8 @@ class QuizFormController extends GetxController {
       return;
     }
 
-    // Pass the form data to the next screen or a quiz-specific controller
-    // For example, you can navigate to the quiz screen with arguments:
     Get.to(
-      ()=> QuizExamScreen(),
+      () => QuizExamScreen(),
       arguments: {
         'questionType': selectedQuestionType.value,
         'subject': selectedSubject.value,

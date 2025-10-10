@@ -12,7 +12,10 @@
         android:label="MCQ Mentor"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"> <!-- Important for Android 10 -->
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
+        > <!-- Important for Android 10 -->
+        
 
         <activity
             android:name=".MainActivity"

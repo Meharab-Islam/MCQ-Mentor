@@ -18,6 +18,19 @@ class ApiEndpoint {
   static const String allPDF = '$baseUrl/Pdf/';
   static const String allQuestion = '$baseUrl/Question';
   static const String studentProfile = '$baseUrl/student';
+  static const String editProfile = '$baseUrl/student/studentsUpdate';
   static const String packageList = '$baseUrl/package';
   static const String packageDetail = '$baseUrl/package';
+  static const String allCategoryListForPdf = '$baseUrl/ExamCategory/showAll';
+  static const String allExamList = '$baseUrl/Exam';
+  static const String examDetails = '$baseUrl/Exam/';
+  static const String examQuestions = '$baseUrl/Exam/all-questions/';
+  static const String submitExam = '$baseUrl/submit-exam';
+  static const String questionBankCategory = '$baseUrl/question-bank-category';
+  static const String questionBankSubCategorye = '$baseUrl/question-bank-sub-category';
+  static const String questionBank = '$baseUrl/question-bank';
+  static const String liveExams = '$baseUrl/Exam/check-live';
+  static const String todaysActivities = '$baseUrl/Exam/todays-activity';
+  static const String leaderboard = '$baseUrl/leaderboard';
+  static const String archiveExamList = '$baseUrl/Archive';
 }

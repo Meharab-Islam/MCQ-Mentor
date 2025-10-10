@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/study_section/study_section.dart';
 import 'package:mcq_mentor/screens/pdf/pdf_category_list_screen.dart';
+import 'package:mcq_mentor/widget/under_maintance_screen.dart';
 
 /// Study Section View (Grid of ListTile-like Cards)
 class StudySectionView extends StatelessWidget {
@@ -41,43 +42,23 @@ class StudySectionView extends StatelessWidget {
                       Get.to(PdfCategoryListScreen());
                       break;
                     case "Video Section":
-                      Get.snackbar(
-                      "Tapped",
-                      section["name"],
-                      snackPosition: SnackPosition.BOTTOM,
-                      );
+                       Get.to(UnderMaintanceScreen());
                       break;
                     
                     case "সংশোধনী পোস্ট":
-                    Get.snackbar(
-                      "Tapped",
-                      section["name"],
-                      snackPosition: SnackPosition.BOTTOM,
-                      );
+                     Get.to(UnderMaintanceScreen());
                       break;
                     
                     case "Audio Section":
-                    Get.snackbar(
-                      "Tapped",
-                      section["name"],
-                      snackPosition: SnackPosition.BOTTOM,
-                      );
+                     Get.to(UnderMaintanceScreen());
                       break;
                     
                     case "Study Group":
-                    Get.snackbar(
-                      "Tapped",
-                      section["name"],
-                      snackPosition: SnackPosition.BOTTOM,
-                      );
+                    Get.to(UnderMaintanceScreen());
                       break;
                     
                     case "Book Store":
-                    Get.snackbar(
-                      "Tapped",
-                      section["name"],
-                      snackPosition: SnackPosition.BOTTOM,
-                      );
+                     Get.to(UnderMaintanceScreen());
                       break;
                     
 

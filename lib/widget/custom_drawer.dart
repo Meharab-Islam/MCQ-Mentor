@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/profile_section/profile_controller.dart';
 import 'package:mcq_mentor/screens/auth/logout_screen.dart';
+import 'package:mcq_mentor/widget/under_maintance_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -150,14 +151,18 @@ class CustomDrawer extends StatelessWidget {
                   icon: Icons.settings_rounded,
                   title: "Settings",
                   delay: 200,
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                     Get.to(()=> UnderMaintanceScreen());
+                  },
                   isDark: isDark,
                 ),
                 _drawerTile(
                   icon: Icons.workspace_premium_rounded,
                   title: "Premium Features",
                   delay: 300,
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(()=> UnderMaintanceScreen());
+                  },
                   isDark: isDark,
                 ),
                 const Divider(

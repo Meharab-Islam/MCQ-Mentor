@@ -1,22 +1,137 @@
+// ignore_for_file: unused_element
+
 import 'package:animate_do/animate_do.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:mcq_mentor/constant/images.dart';
+import 'package:mcq_mentor/controller/exam/todays_activities_controller.dart';
 import 'package:mcq_mentor/screens/home/exam_section/assessment_section_view.dart';
 import 'package:mcq_mentor/screens/home/exam_section/quiz_card.dart';
+import 'package:mcq_mentor/screens/home/question_bank/question_bank_section.dart';
 import 'package:mcq_mentor/screens/home/study_sction/study_section_view.dart';
 import 'package:mcq_mentor/screens/packages/package_list_screen.dart';
+import 'package:mcq_mentor/widget/under_maintance_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+// -------------------- HOME SCREEN --------------------
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  static bool _dialogShown = false;
+  final activityController = Get.put(TodaysActivitiesController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_dialogShown) {
+        _showInfoDialog();
+        _dialogShown = true;
+      }
+    });
+  }
+
+  void _showInfoDialog() async {
+    final player = AudioPlayer();
+    await player.play(AssetSource('sound/welcome_sound.mp3'));
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black54,
+      builder: (context) {
+        return Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 30),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(10.r),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircleAvatar(
+                    radius: 50.r,
+                    backgroundImage: AssetImage(AppImages.logo),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Text(
+                  "স্বাগতম MCQ Mentor এ! 🎓",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade900,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "👉 এখানে আপনি অ্যাসেসমেন্ট দিতে পারবেন, স্টাডি ম্যাটেরিয়াল পড়তে পারবেন এবং মাল্টিপ্লেয়ার কুইজ গেম খেলতে পারবেন।\n\n"
+                  "💡 আপনার সক্রিয় প্যাকেজ চেক করুন এবং শেখার আনন্দ উপভোগ করুন!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.5,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade700,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "বুঝেছি",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Theme.of(context).colorScheme.background,
-      // appBar: const CustomAppbar(),
-      // drawer: const CustomDrawer(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: SingleChildScrollView(
@@ -24,33 +139,26 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Gap(5.h),
-              // Warning Banner
               FadeInDown(child: _buildWarningBanner()),
               Gap(15.h),
 
-              // Exam Section
-              FadeInLeft(
-                child: _buildSectionHeader(context, 'Assessment Section'),
-              ),
+              FadeInLeft(child: _buildSectionHeader('Assessment Section')),
               Gap(10.h),
               const AssessmentSectionView(),
-              Gap(20.h),
 
-              // Study Section
-              FadeInLeft(
-                child: _buildSectionHeader(context, 'Study Section'),
-              ),
+              FadeInLeft(child: _buildSectionHeader('Question Bank')),
+              Gap(10.h),
+              const QuestionBankSectionView(),
+
+              Gap(20.h),
+              FadeInLeft(child: _buildSectionHeader('Study Section')),
               Gap(10.h),
               const StudySectionView(),
               Gap(20.h),
 
-              // Multiplayer Banner
               FadeInUp(child: _buildMultiplayerBanner()),
               Gap(20.h),
 
-              // --- New Sections Added Below ---
-
-              // Today's Activities Section
               FadeInDown(
                 child: Text(
                   'Today\'s Activities',
@@ -61,36 +169,46 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               Gap(10.h),
-              FadeInDown(
-                child: _buildActivitiesCard(),
-              ),
+              FadeInDown(child: _buildActivitiesCard()),
               Gap(20.h),
 
-              // Daily Quiz Section
-              FadeInLeft(
-                child: const QuizCard(
-                  title: 'ডেইলি কুইজ',
-                  totalMarks: 25,
-                  duration: '10 min',
-                  subject: 'English Literature',
-                  topic: 'Renaissance Period\n[Elizabethan Period, Jacobean ... Show More',
-                  studyMaterialsCount: 4,
-                ),
-              ),
-              Gap(20.h),
+              // ✅ Dynamic List of Today's Exams
+              Obx(() {
+                if (activityController.isLoading.value &&
+                    activityController.todaysExams.isEmpty) {
+                  return Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
+                }
 
-              // Bcs Final Exam Section
-              FadeInLeft(
-                child: const QuizCard(
-                  title: '৪৭তম বিসিএস ফাইনাল মডেল টেস্ট ও রিভিশন',
-                  totalMarks: 200,
-                  duration: '1h 30m',
-                  subject: '"Award Mania: Season - 14" এর জন্য প্রযোজ্য',
-                  topic: '৪৭তম বিসিএস ফাইনাল মডেল টেস্ট — ১৫\n(রিয়েল টাইম পরীক্ষা: সকাল ১০:০০ – ১০:... Show More',
-                  studyMaterialsCount: 1,
-                ),
-              ),
-              Gap(100.h),
+                if (activityController.todaysExams.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No exams available today',
+                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: activityController.todaysExams.length,
+                  itemBuilder: (context, index) {
+                    final exam = activityController.todaysExams[index];
+                    return FadeInLeft(
+                      child: QuizCard(
+                        id: exam.id,
+                        examName: exam.examName,
+                        examDescription: exam.examDescription,
+                        examDate: exam.examDate,
+                        durationMinutes: int.parse(exam.duration),
+                        totalMark: exam.totalMark.toString(),
+                        submitted: exam.submitted,
+                      ),
+                    );
+                  },
+                );
+              }),
+              // Gap(100.h),
             ],
           ),
         ),
@@ -98,7 +216,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Warning Banner, Section Header, and Multiplayer Banner methods remain the same as your code.
   Widget _buildWarningBanner() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -118,9 +235,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              Get.to(()=> PackageListScreen());
-            },
+            onPressed: () => Get.to(() => PackageListScreen()),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade700,
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -138,7 +253,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
+  Widget _buildSectionHeader(String title) {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -159,66 +274,70 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMultiplayerBanner() {
-    return Container(
-      height: 60.h,
-      decoration: BoxDecoration(
-        color: Colors.blue.shade900,
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.videogame_asset, color: Colors.white, size: 24.sp),
-            Gap(8.w),
-            Text(
-              'Play Multiplayer Quiz Game',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
+    return Bounceable(
+      onTap: () => Get.to(() => UnderMaintanceScreen()),
+      child: Container(
+        height: 60.h,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade900,
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.videogame_asset, color: Colors.white, size: 24.sp),
+              Gap(8.w),
+              Text(
+                'Play Multiplayer Quiz Game',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                ),
               ),
-            ),
-            Gap(8.w),
-            Icon(Icons.star, color: Colors.yellow, size: 24.sp),
-          ],
+              Gap(8.w),
+              Icon(Icons.star, color: Colors.yellow, size: 24.sp),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // --- New Methods to be added to HomeScreen Class ---
-
   Widget _buildActivitiesCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          children: [
-            _buildActivityRow(
-              title1: 'Total Live Exams:',
-              value1: '15',
-              title2: 'Remaining:',
-              value2: '15',
-            ),
-            Gap(8.h),
-            _buildActivityRow(
-              title1: 'Total Marks:',
-              value1: '795',
-              title2: 'Total Duration:',
-              value2: '6h 28m',
-            ),
-            Gap(8.h),
-            _buildActivityRow(
-              title1: 'Total Live Class:',
-              value1: '0',
-            ),
-          ],
+    return Obx(() {
+      if (activityController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      return Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.r),
         ),
-      ),
-    );
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            children: [
+              _buildActivityRow(
+                title1: 'Total Live Exams:',
+                value1: '${activityController.totalExams.value}',
+                title2: 'Remaining:',
+                value2: '${activityController.remainingExams.value}',
+              ),
+              Gap(8.h),
+              _buildActivityRow(
+                title1: 'Total Marks:',
+                value1: '${activityController.totalMarks.value}',
+                title2: 'Total Duration:',
+                value2: "${activityController.totalDuration.value}",
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildActivityRow({
@@ -233,10 +352,7 @@ class HomeScreen extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: title1,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
             children: [
               TextSpan(
                 text: ' $value1',
@@ -252,10 +368,7 @@ class HomeScreen extends StatelessWidget {
           RichText(
             text: TextSpan(
               text: title2,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
               children: [
                 TextSpan(
                   text: ' $value2',

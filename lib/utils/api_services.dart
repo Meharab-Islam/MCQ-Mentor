@@ -41,11 +41,11 @@ class ApiService {
               response.data is Map &&
               response.data['message'] != null &&
               response.data['message'].toString().isNotEmpty) {
-            Get.snackbar(
-              'Message',
-              response.data['message'].toString(),
-              snackPosition: SnackPosition.BOTTOM,
-            );
+            // Get.snackbar(
+            //   'Message',
+            //   response.data['message'].toString(),
+            //   snackPosition: SnackPosition.BOTTOM,
+            // );
           }
 
           return handler.next(response);
@@ -112,20 +112,43 @@ Future<dio.Response> get(String path,
     await prefs.remove('access_token');
   }
 
-  /// POST request (JSON or FormData)
-  Future<dio.Response> post(String path, dynamic data,
-      {Map<String, dynamic>? queryParameters}) async {
-    try {
-      _dio.options.headers['Accept'] =
-          "application/json";
-      _dio.options.headers['Content-Type'] =
-          (data is dio.FormData) ? 'multipart/form-data' : 'application/json';
-      return await _dio.post(path,
-          data: data, queryParameters: queryParameters);
-    } on dio.DioException catch (e) {
-      rethrow;
+  // / POST request (JSON or FormData)
+
+/// POST request (JSON or FormData)
+Future<dio.Response> post(
+  String path,
+  dynamic data, {
+  Map<String, dynamic>? queryParameters,
+  bool needToken = false, // ✅ token required only if true
+}) async {
+  try {
+    _dio.options.headers['Accept'] = "application/json";
+    _dio.options.headers['Content-Type'] =
+        (data is dio.FormData) ? 'multipart/form-data' : 'application/json';
+
+    // Load token from local storage
+    await getAuthToken();
+
+    // If token is required but missing, throw error
+    if (needToken && _authToken == null) {
+      throw Exception("Access token is required for this request!");
     }
+
+    // Add token if exists
+    if (_authToken != null) {
+      _dio.options.headers['Authorization'] = 'Bearer $_authToken';
+    }
+
+    return await _dio.post(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+    );
+  } on dio.DioException catch (e) {
+    rethrow;
   }
+}
+
 
   /// PUT request (JSON or FormData)
   Future<dio.Response> put(String path, dynamic data,

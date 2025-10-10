@@ -34,37 +34,58 @@ class PdfOpenDownloadController extends GetxController{
 /// 🔹 Download PDF with Dio (first request permission, then download)
 Future<void> downloadPdf(String pdfUrl, String fileName) async {
   try {
-    // Request permission
- if (Platform.isAndroid) {
-  if (await Permission.manageExternalStorage.isDenied) {
-    final status = await Permission.manageExternalStorage.request();
-    if (!status.isGranted) {
-      Get.snackbar(
-        'Permission Denied',
-        'Storage permission is required to save PDFs',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      Permission.manageExternalStorage.request();
-      return;
-    }
-  }
-}
+    print('🔽 Starting PDF download...');
+    print('PDF URL: $pdfUrl');
+    print('File name: $fileName');
 
+    // Request permission
+    if (Platform.isAndroid) {
+      print('📱 Platform: Android - Checking manageExternalStorage permission...');
+      if (await Permission.manageExternalStorage.isDenied) {
+        print('⚠️ Permission is denied, requesting permission...');
+        final status = await Permission.manageExternalStorage.request();
+        print('📄 Permission status: ${status.isGranted ? "GRANTED" : "DENIED"}');
+        if (!status.isGranted) {
+          print('❌ Storage permission denied');
+          Get.snackbar(
+            'Permission Denied',
+            'Storage permission is required to save PDFs',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Permission.manageExternalStorage.request();
+          return;
+        }
+      } else {
+        print('✅ Permission already granted.');
+      }
+    }
 
     // Determine save location
+    print('📂 Determining save location...');
     Directory dir;
     if (Platform.isAndroid) {
       dir = Directory('/storage/emulated/0/Download/BCS_PDFs');
-      if (!await dir.exists()) await dir.create(recursive: true);
+      print('📁 Android save directory: ${dir.path}');
+      if (!await dir.exists()) {
+        print('📦 Directory does not exist — creating...');
+        await dir.create(recursive: true);
+        print('✅ Directory created successfully.');
+      } else {
+        print('📁 Directory already exists.');
+      }
     } else if (Platform.isIOS) {
+      print('🍏 Platform: iOS - Getting application documents directory...');
       dir = await getApplicationDocumentsDirectory();
+      print('📁 iOS save directory: ${dir.path}');
     } else {
       throw Exception('Unsupported platform');
     }
 
     final savePath = '${dir.path}/$fileName.pdf';
+    print('📄 File will be saved to: $savePath');
 
     // Show progress dialog
+    print('📤 Showing download dialog...');
     Get.dialog(
       AlertDialog(
         title: const Text('Downloading PDF'),
@@ -81,6 +102,7 @@ Future<void> downloadPdf(String pdfUrl, String fileName) async {
     );
 
     // Download using Dio
+    print('⬇️ Starting Dio download...');
     final dio = Dio();
     await dio.download(
       pdfUrl,
@@ -88,20 +110,31 @@ Future<void> downloadPdf(String pdfUrl, String fileName) async {
       onReceiveProgress: (received, total) {
         if (total != -1) {
           final progress = (received / total * 100).toStringAsFixed(0);
-          debugPrint('Download progress: $progress%');
+          print('📊 Download progress: $progress% ($received/$total bytes)');
         }
       },
     );
 
+    print('✅ Download completed successfully!');
     Get.back(); // Close dialog
-    Get.snackbar('✅ Download Complete', 'Saved to: $savePath',
-        snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(
+      '✅ Download Complete',
+      'Saved to: $savePath',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+    print('📦 Snackbar shown: Download Complete.');
   } catch (e) {
+    print('❌ Error occurred: $e');
     Get.back();
-    Get.snackbar('Error', 'Failed to download PDF: $e',
-        snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar(
+      'Error',
+      'Failed to download PDF: $e',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+    print('🚨 Snackbar shown: Download failed.');
   }
 }
+
 
 
   /// 🔹 Open in external browser

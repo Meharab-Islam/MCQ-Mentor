@@ -9,7 +9,9 @@ import 'package:mcq_mentor/screens/question/widgets/option_tile.dart';
 class QuestionCard extends StatelessWidget {
   final dynamic question;
   final bool showCorrect;
+  final bool? isShowAnalytics;
   final bool showAnalytics;
+  final bool? isShowFavorite;
   final bool isFavorite;
   final VoidCallback onToggleCorrect;
   final VoidCallback onToggleAnalytics;
@@ -20,6 +22,8 @@ class QuestionCard extends StatelessWidget {
     required this.question,
     required this.showCorrect,
     required this.showAnalytics,
+    this.isShowFavorite = true,
+    this.isShowAnalytics = true,
     required this.isFavorite,
     required this.onToggleCorrect,
     required this.onToggleAnalytics,
@@ -105,8 +109,9 @@ class QuestionCard extends StatelessWidget {
                             ? Icons.visibility_off
                             : Icons.check_circle_outline,
                       ),
-                      label: Text(showCorrect ? "Hide Answer" : "Show Correct"),
+                      label: Text(showCorrect ? "Hide Answer" : "Correct Answer"),
                     ),
+                   if(isShowAnalytics == true)
                     TextButton.icon(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.blueAccent.shade700,
@@ -138,7 +143,7 @@ class QuestionCard extends StatelessWidget {
                         question.explanation ?? "",
                       ),
                       icon: const Icon(Icons.info_outline),
-                      label: const Text("Explain"),
+                      label: const Text("Explnation"),
                     ),
                   ],
                 ),
@@ -150,6 +155,7 @@ class QuestionCard extends StatelessWidget {
           ),
 
           /// ❤️ Favorite button top-right
+          if(isShowFavorite == true)
           Positioned(
             top: 2,
             right: 1,

@@ -90,7 +90,8 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return  Scaffold(
+      backgroundColor: Get.theme.colorScheme.background,
       body: Center(
         child: LogoLoader(assetPath: AppImages.logo),
       ),

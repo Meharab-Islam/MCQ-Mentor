@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +8,6 @@ import 'package:mcq_mentor/controller/exam_scction/exam_section_controller.dart'
 import 'package:mcq_mentor/controller/exam_scction/single_exam_section_controller.dart';
 import 'package:mcq_mentor/screens/home/category_section/category_section_list_screen.dart';
 import 'package:mcq_mentor/screens/home/weekly_model_test/weekly_model_test_screen.dart';
-import 'assessment_section_view.dart';
 
 class AllAssessmentScreen extends StatelessWidget {
   const AllAssessmentScreen({super.key});
@@ -28,7 +28,7 @@ class AllAssessmentScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.examSections.isEmpty && controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
         }
 
         return GridView.builder(
@@ -52,7 +52,7 @@ class AllAssessmentScreen extends StatelessWidget {
                 onTap: () async {
                   // Show loader
                   Get.dialog(
-                    const Center(child: CircularProgressIndicator()),
+                     Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,)),
                     barrierDismissible: false,
                   );
 
@@ -102,14 +102,49 @@ class AllAssessmentScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (section.icon != null)
-                              Image.network(section.icon!, height: 30.h),
+                              CachedNetworkImage(
+                                imageUrl: section.icon != null
+                                    ? section.icon.toString()
+                                    : 'https://cdn-icons-png.flaticon.com/128/739/739249.png',
+                                height: 30.h,
+
+                                fit: BoxFit.cover,
+
+                                // While loading
+                                placeholder: (context, url) => Container(
+                                  height: 150.h,
+                                  width: 120.w,
+                                  alignment: Alignment.center,
+                                  color: Colors.grey.shade200,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Get.theme.colorScheme.onPrimary,
+                                  ),
+                                ),
+
+                                // On error
+                                errorWidget: (context, url, error) => Container(
+                                  height: 150.h,
+                                  width: 120.w,
+                                  alignment: Alignment.center,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(
+                                    Icons.broken_image_outlined,
+                                    color: Colors.redAccent,
+                                    size: 40,
+                                  ),
+                                ),
+                              ),
                             const SizedBox(height: 10),
-                            Text(
-                              section.name ?? '',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 7.w),
+                              child: Text(
+                                section.name ?? '',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 6),
@@ -124,7 +159,7 @@ class AllAssessmentScreen extends StatelessWidget {
                         ),
                       ),
                       if (isLive)
-                        const Positioned(
+                        Positioned(
                           top: 8,
                           right: 8,
                           child: AnimatedLiveDot(),

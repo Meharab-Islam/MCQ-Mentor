@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/screens/home/home_screen.dart';
+import 'package:mcq_mentor/screens/leaderboard/leaderboard_view.dart';
 import 'package:mcq_mentor/screens/packages/package_list_screen.dart';
 import 'package:mcq_mentor/screens/profile/profile_screen.dart';
 import 'package:mcq_mentor/screens/quiz/quiz_form_screen.dart';
@@ -40,7 +41,7 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
     /// widget list
     final List<Widget> bottomBarPages = [
      QuizMasterScreen(),
-    const Placeholder(), 
+    LeaderboardView(), 
     const HomeScreen(),
     const PackageListScreen(isMain: true,), 
     const ProfileScreen(), 
@@ -79,19 +80,19 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
               bottomBarItems:  [
                 BottomBarItem(
                   inActiveItem: Icon(
-                    Icons.home_filled,
+                    Icons.ballot_outlined,
                       color: Theme.of(context).colorScheme.primary,
                   ),
                   activeItem: Icon(
-                    Icons.home_filled,
+                    Icons.ballot_outlined,
                      color: Theme.of(context).colorScheme.primary,
                   ),
-                  itemLabel: 'Page 1',
+                  itemLabel: 'Quiz',
                 ),
                 BottomBarItem(
-                  inActiveItem: Icon(Icons.star,  color: Theme.of(context).colorScheme.primary,),
+                  inActiveItem: Icon(Icons.leaderboard_outlined,  color: Theme.of(context).colorScheme.primary,),
                   activeItem: Icon(
-                    Icons.star,
+                    Icons.leaderboard_outlined,
                      color: Theme.of(context).colorScheme.primary,
                   ),
                   itemLabel: 'Page 2',

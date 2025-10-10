@@ -16,14 +16,17 @@ class AssessmentController extends GetxController {
   var perPage = 20;
   var hasNextPage = true.obs;
 
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() {
     super.onInit();
-    fetchExamSections();
 
-    // Infinite scroll listener
+    // Safe call after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchExamSections();
+    });
+
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 200 &&
@@ -42,15 +45,18 @@ class AssessmentController extends GetxController {
     try {
       final response = await _apiService.get(
         ApiEndpoint.examSection,
-        queryParameters: {'page': page ?? currentPage, 'per_page': perPage, 'order':'asc'},
+        queryParameters: {
+          'page': page ?? currentPage,
+          'per_page': perPage,
+          'order': 'asc',
+        },
       );
 
       if (response.statusCode == 200) {
         final model = ExamSectionsModel.fromJson(response.data);
+
         if (model.data != null && model.data!.isNotEmpty) {
           examSections.addAll(model.data!);
-
-          // Update pagination info
           currentPage = model.pagination?.currentPage ?? currentPage;
           hasNextPage.value =
               currentPage < (model.pagination?.totalPage ?? currentPage);
@@ -59,7 +65,6 @@ class AssessmentController extends GetxController {
         }
       }
     } on DioException catch (e) {
-      // Handle error
       debugPrint('Error fetching Exam Sections: ${e.response?.data}');
     } finally {
       isLoading.value = false;
