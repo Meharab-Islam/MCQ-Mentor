@@ -9,12 +9,12 @@ class TodaysActivitiesController extends GetxController {
   final ApiService _apiService = ApiService();
 
   var todaysExams = <TodayExamData>[].obs;
-  var totalExams = 0.obs;
-  var submittedExams = 0.obs;
-  RxDouble totalMarks = 0.0.obs;
-  var totalDuration = 0.obs;
+  var totalExams = "0".obs;
+  var submittedExams = "0".obs;
+  var totalMarks = "0".obs;
+  var totalDuration = "0".obs;
   var isLoading = false.obs;
-  var remainingExams = 0.obs;
+  var remainingExams = "0".obs;
 
   @override
   void onInit() {

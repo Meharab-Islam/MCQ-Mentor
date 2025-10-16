@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OptionTile extends StatelessWidget {
   final String option;
   final bool isCorrect;
+  final String label;
 
-  const OptionTile({super.key, required this.option, required this.isCorrect});
+  const OptionTile({super.key, required this.option, required this.isCorrect, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,20 @@ class OptionTile extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        leading: Container(
+          height: 30.w,
+          width: 30.w,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(label, style: TextStyle(
+              fontSize: 16.sp
+            ),),
+          ),
+        ),
         title: Text(
           option,
           style: TextStyle(

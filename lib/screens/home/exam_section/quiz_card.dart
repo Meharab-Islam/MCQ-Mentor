@@ -49,14 +49,15 @@ class _QuizCardState extends State<QuizCard> {
     return hours > 0 ? '${hours}h ${mins}m' : '${mins} min';
   }
 
-  String _removeHtmlTags(String htmlString) {
-    final document = html_parser.parse(htmlString);
+  /// Remove HTML tags for preview
+  String _plainText(String html) {
+    final document = html_parser.parse(html);
     return html_parser.parse(document.body?.text ?? '').documentElement?.text ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final plainDescription = _removeHtmlTags(widget.examDescription);
+    final previewText = _plainText(widget.examDescription);
 
     return Card(
       elevation: 4,
@@ -106,43 +107,41 @@ class _QuizCardState extends State<QuizCard> {
             ),
             Gap(12.h),
 
-            // Expandable Description
+            // Show preview or full HTML
             if (widget.examDescription.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnimatedCrossFade(
-                    firstChild: Text(
-                      plainDescription,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
-                    ),
-                    secondChild: Html(
-                      data: widget.examDescription,
-                      style: {
-                        "body": Style(
-                          fontSize: FontSize(14.sp),
-                          color: Colors.grey[800],
+                  isExpanded
+                      ? Html(
+                          data: widget.examDescription,
+                          style: {
+                            "body": Style(
+                              fontSize: FontSize(14.sp),
+                              color: Colors.grey[800],
+                            ),
+                          },
+                        )
+                      : Text(
+                          previewText,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                         ),
-                      },
-                    ),
-                    crossFadeState: isExpanded
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 300),
-                  ),
-                  GestureDetector(
-                    onTap: () => setState(() => isExpanded = !isExpanded),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 4.h),
-                      child: Text(
-                        isExpanded ? 'Show Less' : 'Read More',
-                        style: TextStyle(
-                          color: Get.theme.colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp,
-                          decoration: TextDecoration.underline,
+                  Align(
+
+alignment: AlignmentGeometry.centerRight,                    child: GestureDetector(
+                      onTap: () => setState(() => isExpanded = !isExpanded),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 4.h),
+                        child: Text(
+                          isExpanded ? 'Show Less' : 'Read More',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ),
@@ -151,26 +150,27 @@ class _QuizCardState extends State<QuizCard> {
                 ],
               ),
 
-            // Live Exam Button
+            // Details Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                icon: Icon(Icons.info_outline),
-                onPressed: (){
-        
-                Get.to(()=> ExamDetailsView(examId: widget.id, submitted: widget.submitted,));
+                icon: const Icon(Icons.info_outline),
+                onPressed: () {
+                  Get.to(() => ExamDetailsView(
+                        examId: widget.id,
+                        submitted: widget.submitted,
+                      ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                    Colors.blue.shade700,
+                  backgroundColor: Colors.blue.shade700,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 ),
-                label: Text(
+                label: const Text(
                   'Details',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

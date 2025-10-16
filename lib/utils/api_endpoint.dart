@@ -1,5 +1,6 @@
 class ApiEndpoint {
-  // static const String baseUrl = 'http://192.168.110.188:8000/api';
+  // static const String baseUrl = 'http://192.168.0.102:8000/api';
+  // static const String baseUrl = 'http://192.168.0.100:8000/api';
   static const String baseUrl = 'https://api.mcqmentor.com/mcq_web_app/public/api';
   static const String login = '$baseUrl/login';
   static const String register = '$baseUrl/register';
@@ -33,4 +34,11 @@ class ApiEndpoint {
   static const String todaysActivities = '$baseUrl/Exam/todays-activity';
   static const String leaderboard = '$baseUrl/leaderboard';
   static const String archiveExamList = '$baseUrl/Archive';
+  static const String archiveQuestions = '$baseUrl/Archive/view-all';
+  static const String archiveExamSubmit = '$baseUrl/archive-submit-exam';
+  static const String archiveResult = '$baseUrl/Result';
+  static const String toggleFavorite = '$baseUrl/Favorite';
+  static const String favorites = '$baseUrl/Favorite';
+  static const String notificationList = '$baseUrl/notice';
+  static const String markNotificationRead = '$baseUrl/notice';
 }

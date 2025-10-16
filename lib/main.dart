@@ -77,14 +77,14 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
     await Future.delayed(const Duration(seconds: 2)); // Optional splash delay
     final token = loginController.getToken();
     print("Access Token: $token");
-
+     
     if (token != null) {
       // User is logged in, navigate to HomeScreen
       // Get.off(() => const CustomBottomNavBarScreen());
       Get.off(() => const CustomBottomNavBarScreen());
     } else {
       // User not logged in, navigate to LoginScreen
-      Get.off(() => const LoginScreen());
+      Get.off(() => const LoginScreen()); 
     }
   }
 

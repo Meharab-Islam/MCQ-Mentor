@@ -19,9 +19,9 @@ class ExamResultView extends StatelessWidget {
     ScreenUtil.init(context, designSize: const Size(360, 690));
 
     final Map<String, double> chartData = {
-      "Correct": result.correctAnswers.toDouble(),
-      "Wrong": result.wrongAnswers.toDouble(),
-      "Not Answered": result.notAnswered.toDouble(),
+      "Correct": double.parse(result.correctAnswers),
+      "Wrong": double.parse(result.wrongAnswers),
+      "Not Answered": double.parse(result.notAnswered),
     };
 
     final List<Color> chartColors = [
@@ -146,12 +146,15 @@ class ExamResultView extends StatelessWidget {
                       ),
                     ),
                     const Divider(),
-                    _buildRow("Cut Mark per Wrong", result.cutMarkPerWrong.toStringAsFixed(2)),
-                    _buildRow("Total Cut Marks", result.totalCutMarks.toStringAsFixed(2)),
+                    _buildRow("Negative Marks Per Wrong", result.negativeMarksPerWrong),
+                    _buildRow("Total Negative Marks", result.totalNegativeMarks),
+                    _buildRow("Pass Marks", result.passMarks, isHighlighted: true),
                     _buildRow(
                       "Final Marks",
-                      result.totalMarksAfterCut.toStringAsFixed(2),
-                      isHighlighted: true,
+                      result.totalMarksAfterNegativeMarkings,
+                    finalMark: double.parse(result.totalMarksAfterNegativeMarkings),
+                    passMark: double.parse(result.passMarks),
+                    isHighlighted: true,
                     ),
                   ],
                 ),
@@ -183,26 +186,48 @@ class ExamResultView extends StatelessWidget {
     
   }
 
-  Widget _buildRow(String title, String value, {bool isHighlighted = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
-              color: isHighlighted ? Get.theme.colorScheme.onPrimary : Colors.black87,
-            ),
-          ),
-        ],
-      ),
-    );
+ Widget _buildRow(
+  String title,
+  String value, {
+  bool isHighlighted = false,
+  double? finalMark,
+  double? passMark,
+}) {
+  // Determine the color based on finalMark vs passMark
+  Color valueColor = Colors.black87;
+  if (isHighlighted && finalMark != null && passMark != null) {
+    if (finalMark >= passMark) {
+      valueColor = Colors.green; // Pass
+    } else {
+      valueColor = Colors.red; // Fail
+    }
+  } else if (isHighlighted) {
+    valueColor = Colors.green; // Default highlight
   }
+
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 6.h),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
+            color: valueColor,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }

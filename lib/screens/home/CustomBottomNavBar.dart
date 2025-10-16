@@ -95,7 +95,7 @@ class _CustomBottomNavBarScreenState extends State<CustomBottomNavBarScreen> {
                     Icons.leaderboard_outlined,
                      color: Theme.of(context).colorScheme.primary,
                   ),
-                  itemLabel: 'Page 2',
+                  itemLabel: 'Leaderboard',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(

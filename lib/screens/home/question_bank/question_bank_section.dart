@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/question_bank/question_bank_category_controller.dart';
 import 'package:mcq_mentor/screens/home/question_bank/all_questionbank_view.dart';
@@ -16,7 +17,7 @@ class QuestionBankSectionView extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Obx(() {
         if (controller.isLoading.value && controller.categories.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
         }
 
         if (controller.categories.isEmpty) {
@@ -30,17 +31,11 @@ class QuestionBankSectionView extends StatelessWidget {
         return Column(
           children: [
             /// ✅ Show max 4 category cards
-            GridView.builder(
+            ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               itemCount: itemCount,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 2.5,
-              ),
               itemBuilder: (context, index) {
                 final category = controller.categories[index];
                 final firstLetter = category.name.isNotEmpty
@@ -58,7 +53,7 @@ class QuestionBankSectionView extends StatelessWidget {
                     },
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      padding:  EdgeInsets.symmetric(vertical: 12.h,horizontal: 12.w),
                       child: Row(
                         children: [
                           CircleAvatar(
@@ -78,10 +73,11 @@ class QuestionBankSectionView extends StatelessWidget {
                           Expanded(
                             child: Text(
                               category.name,
-                              style: const TextStyle(
-                                fontSize: 13,
+                              style:  TextStyle(
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.w600,
                               ),
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -97,14 +93,14 @@ class QuestionBankSectionView extends StatelessWidget {
                 );
               },
             ),
-
-            const SizedBox(height: 16),
+ if (controller.categories.length > 6)
+            SizedBox(height: 16.h),
 
             /// ✅ See All Button
             if (controller.categories.length > 6)
               SizedBox(
-                width: 180,
-                height: 45,
+                width: 180.w,
+                height: 40.h,
                 child: ElevatedButton(
                   onPressed: (){Get.to(()=> AllQuestionBankCategoryView());},
                   style: ElevatedButton.styleFrom(

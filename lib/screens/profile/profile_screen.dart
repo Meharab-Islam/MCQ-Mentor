@@ -104,8 +104,8 @@ class ProfileScreen extends StatelessWidget {
                           height: 45,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // Get.to(()=> EditProfileScreen(userData: student,));
-                              Get.to(()=> UnderMaintanceScreen());
+                              Get.to(()=> EditProfileScreen(userData: student,));
+                              // Get.to(()=> UnderMaintanceScreen());
                             },
                             icon: Icon(Icons.edit_note_outlined, color: Colors.white,),
                             style: ElevatedButton.styleFrom(

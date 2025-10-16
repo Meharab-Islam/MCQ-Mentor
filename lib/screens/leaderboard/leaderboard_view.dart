@@ -20,7 +20,11 @@ class LeaderboardView extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
+          return Center(
+            child: CircularProgressIndicator(
+              color: Get.theme.colorScheme.onPrimary,
+            ),
+          );
         }
 
         if (controller.leaderboard.isEmpty) {
@@ -30,9 +34,8 @@ class LeaderboardView extends StatelessWidget {
         return RefreshIndicator(
           color: Get.theme.colorScheme.onPrimary,
           onRefresh: () async => controller.fetchLeaderboard(),
-          
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
             itemCount: controller.leaderboard.length,
             itemBuilder: (context, index) {
               final user = controller.leaderboard[index];
@@ -48,6 +51,7 @@ class LeaderboardView extends StatelessWidget {
     );
   }
 }
+
 class LeaderboardCard extends StatelessWidget {
   final dynamic user;
   final int rank;
@@ -62,74 +66,75 @@ class LeaderboardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double accuracy = user.totalAnsweredQuestions > 0
-        ? (user.totalCorrectAnswers / user.totalAnsweredQuestions)
-        : 0;
+    double accuracy = 0;
+    final totalAnswered = int.tryParse(user.totalAnsweredQuestions ?? '0') ?? 0;
+    final totalCorrect = int.tryParse(user.totalCorrectAnswers ?? '0') ?? 0;
+
+    if (totalAnswered > 0) {
+      accuracy = totalCorrect / totalAnswered;
+    }
 
     return Card(
       elevation: isTopUser ? 10 : 4,
-      shadowColor: isTopUser ? Get.theme.colorScheme.onPrimary : Colors.grey,
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.r),
-      ),
+      shadowColor: isTopUser
+          ? Get.theme.colorScheme.onPrimary
+          : Colors.grey.shade400,
+      margin: EdgeInsets.symmetric(vertical: 6.h),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Rank Row
+            // Rank & Avatar
             Row(
               children: [
                 Stack(
                   alignment: Alignment.topRight,
                   children: [
-                    // Avatar Container with gradient border
+                    // Square profile image
                     Container(
                       width: 90.w,
-                      height: 90.w,
+                      height: 110.w,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
                         gradient: _avatarGradient(rank),
                         boxShadow: [
                           BoxShadow(
                             color: _rankShadow(rank),
                             blurRadius: 10,
                             spreadRadius: 1,
-                          )
+                          ),
                         ],
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(3.w),
-                        child: CircleAvatar(
-  radius: 45,
-  backgroundColor: Colors.grey[200],
-  backgroundImage: NetworkImage(user.image ?? ''), // optional, can leave null
-  child: ClipOval(
-    child: Image.network(
-      user.image ?? '',
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        // Fallback image if user.image is null or broken
-        return Image.network(
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
-          fit: BoxFit.cover,
-        );
-      },
-    ),
-  ),
-)
-
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: Image.network(
+                            (user.image != null && user.image!.isNotEmpty)
+                                ? user.image!
+                                : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.network(
+                                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
-
                     // Rank Badge
                     Positioned(
                       right: 0,
                       top: 0,
                       child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
                           color: _rankColor(rank),
                           borderRadius: BorderRadius.circular(12.r),
@@ -137,8 +142,11 @@ class LeaderboardCard extends StatelessWidget {
                         child: Row(
                           children: [
                             if (rank == 1)
-                              Icon(Icons.emoji_events,
-                                  size: 16.sp, color: Colors.white),
+                              Icon(
+                                Icons.emoji_events,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
                             Text(
                               "#$rank",
                               style: TextStyle(
@@ -159,25 +167,28 @@ class LeaderboardCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user.name,
+                        user.name ?? 'Unknown',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        user.email,
-                        style:
-                            TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
+                        user.email ?? '',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey[700],
+                        ),
                       ),
                       Gap(10.h),
                       Text(
-                        "Total Marks: ${user.totalObtainedMarks.toStringAsFixed(2)}",
+                        "Total Marks: ${user.totalObtainedMarks ?? '0'}",
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
-                          color:
-                              isTopUser ? Colors.amber[800] : Colors.blueAccent,
+                          color: isTopUser
+                              ? Colors.amber[800]
+                              : Colors.blueAccent,
                         ),
                       ),
                     ],
@@ -187,24 +198,38 @@ class LeaderboardCard extends StatelessWidget {
             ),
             Gap(12.h),
             Divider(color: Colors.grey.shade300),
-
-            // Stats
+            Gap(6.h),
+            // Stats Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _statItem(Icons.task, "Exams", user.totalExamsAttended.toString()),
-                _statItem(Icons.check_circle, "Correct", user.totalCorrectAnswers.toString()),
-                _statItem(Icons.cancel, "Wrong", user.totalWrongAnswers.toString()),
-                _statItem(Icons.help_outline, "Not Given", user.notGivenExams.toString()),
+                _statItem(
+                  Icons.task,
+                  "Exams",
+                  user.totalExamsAttended.toString(),
+                ),
+                _statItem(
+                  Icons.check_circle,
+                  "Correct",
+                  user.totalCorrectAnswers.toString(),
+                ),
+                _statItem(
+                  Icons.cancel,
+                  "Wrong",
+                  user.totalWrongAnswers.toString(),
+                ),
+                _statItem(
+                  Icons.help_outline,
+                  "Not Given",
+                  user.notGivenExams.toString(),
+                ),
               ],
             ),
-
             Gap(12.h),
-
             // Accuracy bar
             LinearPercentIndicator(
               lineHeight: 10.h,
-              percent: accuracy,
+              percent: accuracy.clamp(0, 1),
               progressColor: Colors.green,
               backgroundColor: Colors.grey.shade300,
               barRadius: Radius.circular(20.r),
@@ -221,7 +246,6 @@ class LeaderboardCard extends StatelessWidget {
     );
   }
 
-  // 🌟 Gradient border for top 3 ranks
   Gradient _avatarGradient(int rank) {
     switch (rank) {
       case 1:
@@ -235,7 +259,6 @@ class LeaderboardCard extends StatelessWidget {
     }
   }
 
-  // ✨ Shadow for avatar
   Color _rankShadow(int rank) {
     switch (rank) {
       case 1:
@@ -249,7 +272,6 @@ class LeaderboardCard extends StatelessWidget {
     }
   }
 
-  // 🏅 Badge color
   Color _rankColor(int rank) {
     switch (rank) {
       case 1:
@@ -263,17 +285,13 @@ class LeaderboardCard extends StatelessWidget {
     }
   }
 
-  // 📊 Small stat widget
   Widget _statItem(IconData icon, String label, String value) {
     return Column(
       children: [
         Icon(icon, size: 20.sp, color: Colors.blueAccent),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
         ),
         Text(
           label,
@@ -282,5 +300,4 @@ class LeaderboardCard extends StatelessWidget {
       ],
     );
   }
-
 }

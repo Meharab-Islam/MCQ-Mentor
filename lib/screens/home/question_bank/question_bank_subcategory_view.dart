@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/question_bank/question_bank_subcategory_controller.dart';
 import 'package:mcq_mentor/screens/home/question_bank/question_bank_question_list.dart';
@@ -34,9 +35,9 @@ class QuestionBankSubCategoryView extends StatelessWidget {
           itemBuilder: (context, index) {
             if (index == controller.subCategories.length) {
               /// Show bottom loader while loading next page
-              return const Padding(
+              return  Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary)),
               );
             }
 
@@ -60,9 +61,9 @@ class QuestionBankSubCategoryView extends StatelessWidget {
                     ),
                   ),
                 ),
-                title: Text(subCategory.name),
+                title: Text(subCategory.name, style: TextStyle(fontSize: 16.sp),),
                 // subtitle: Text("Status: ${subCategory.status}"),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
                 onTap: () {
                  Get.to(()=> QuestionBankQuestionList(
                   categoryId: subCategory.categoryId,

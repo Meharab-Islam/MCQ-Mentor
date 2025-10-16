@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:mcq_mentor/controller/archive/archive_exam_controller.dart';
 import 'package:mcq_mentor/model/archive/archive_exam_model.dart';
-import 'package:mcq_mentor/screens/exam/exam_question_view.dart';
-import 'package:mcq_mentor/screens/question/all_question_list_screen.dart';
+import 'package:mcq_mentor/screens/archive/archive_give_exam_question_list.dart';
+import 'package:mcq_mentor/screens/archive/archive_question_list_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ArchiveExamView extends StatefulWidget {
@@ -54,7 +54,7 @@ Widget build(BuildContext context) {
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.exams.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
         }
 
         if (controller.exams.isEmpty) {
@@ -75,9 +75,9 @@ Widget build(BuildContext context) {
                 (controller.isLoading.value ? 1 : 0),
             itemBuilder: (context, index) {
               if (index == controller.exams.length) {
-                return const Padding(
+                return  Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary)),
                 );
               }
 
@@ -176,7 +176,7 @@ Widget build(BuildContext context) {
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () {
-                             Get.to(()=>QuestionListPage() )  ;
+                             Get.to(()=>ArchiveQuestionListView(isShowAnalytics: false, examSectionSd: widget.examCategoryId.toString(), examSectionCategoryId: widget.examCategoryId.toString(), archiveId: exam.id,) )  ;
                               },
                               icon: Icon(Icons.visibility, color: Get.theme.colorScheme.onPrimary,),
                               label: Text("See Questions", style: TextStyle(
@@ -188,7 +188,7 @@ Widget build(BuildContext context) {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                               Get.to(()=> ExamQuestionView(examId: exam.id, duration: int.parse(exam.duration)));
+                               Get.to(()=> ArchiveGiveExamQuestionList(archiveId: exam.id, duration: int.parse(exam.duration)));
                               },
                               icon: const Icon(Icons.play_arrow),
                               label: const Text("Give Exam"),

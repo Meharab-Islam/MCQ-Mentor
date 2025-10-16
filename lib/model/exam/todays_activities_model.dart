@@ -19,11 +19,11 @@ class TodaysActivitiesModel {
 }
 
 class TodayExamSummary {
-  final int totalExams;
-  final int submittedExams;
-  final double totalMarks; // ✅ use double, not Double
-  final int totalDuration;
-  final int remainingExams;
+  final String totalExams;
+  final String submittedExams;
+  final String totalMarks; // ✅ use double, not Double
+  final String totalDuration;
+  final String remainingExams;
   final List<TodayExamData> exams;
 
   TodayExamSummary({
@@ -37,11 +37,11 @@ class TodayExamSummary {
 
   factory TodayExamSummary.fromJson(Map<String, dynamic> json) {
     return TodayExamSummary(
-      totalExams: json['total_exams'] ?? 0,
-      submittedExams: json['submitted_exams'] ?? 0,
-      totalMarks: (json['total_marks'] ?? 0).toDouble(), // ✅ convert to double
-      totalDuration: json['total_duration'] ?? 0,
-      remainingExams: json['remaining_exams'] ?? 0,
+      totalExams: json['total_exams'] ?? "0",
+      submittedExams: json['submitted_exams'] ?? "0",
+      totalMarks: (json['total_marks'] ?? "0"), // ✅ convert to double
+      totalDuration: json['total_duration'] ?? "0",
+      remainingExams: json['remaining_exams'] ?? "0",
       exams: (json['exams'] as List<dynamic>?)
               ?.map((e) => TodayExamData.fromJson(e))
               .toList() ??

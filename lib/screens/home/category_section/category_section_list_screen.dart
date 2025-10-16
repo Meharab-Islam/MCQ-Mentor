@@ -13,12 +13,15 @@ class CategorySectionListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("asfhoiafioajf jaiofjsako fjwiofiaosfj wifjiowj ${examSectionId}");
     final AllCategoryListController allCategoryListController = Get.put(
       AllCategoryListController(
         examSectionId: examSectionId,
       ),
     );
-    final SingleCategoryDetailsController singleCategoryDetailsController = Get.put(SingleCategoryDetailsController());
+    final SingleCategoryDetailsController singleCategoryDetailsController = Get.put(SingleCategoryDetailsController(
+      examSectionId: examSectionId.toString()
+    ));
 
     return Scaffold(
       appBar: CustomAppbar(),

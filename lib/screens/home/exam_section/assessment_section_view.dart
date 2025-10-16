@@ -40,7 +40,7 @@ class _AssessmentSectionViewState extends State<AssessmentSectionView>
       padding: const EdgeInsets.all(12.0),
       child: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
         }
 
         if (!_showContent) {
@@ -98,7 +98,7 @@ class _AssessmentSectionViewState extends State<AssessmentSectionView>
     return Bounceable(
       onTap: () async {
         Get.dialog(
-          const Center(child: CircularProgressIndicator()),
+           Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary)),
           barrierDismissible: false,
         );
 

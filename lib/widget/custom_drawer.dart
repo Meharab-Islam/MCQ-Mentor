@@ -42,7 +42,7 @@ class CustomDrawer extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: isDark
                       ? [const Color(0xFF23283E), const Color(0xFF1B1F33)]
-                      : [const Color(0xFF6DD5FA), const Color(0xFF2980B9)],
+                      : [const Color.fromARGB(255, 14, 37, 76), const Color.fromARGB(255, 9, 127, 206)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

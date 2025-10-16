@@ -170,7 +170,7 @@ class AllAssessmentScreen extends StatelessWidget {
               );
             } else {
               // Loader item at the bottom
-              return const Center(child: CircularProgressIndicator());
+              return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
             }
           },
         );

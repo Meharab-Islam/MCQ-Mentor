@@ -1,10 +1,12 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/auth/login_controller.dart';
 import 'package:mcq_mentor/screens/auth/forget_password_screen.dart';
+import 'package:mcq_mentor/screens/auth/phone_login_screen.dart';
 import 'package:mcq_mentor/screens/auth/registration_screen.dart';
 import 'package:mcq_mentor/widget/logo.dart';
 import 'package:mcq_mentor/widget/primary_button.dart';
@@ -30,7 +32,7 @@ class LoginScreen extends StatelessWidget {
         : colorScheme.onPrimary;
 
     return GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(), // ✅ dismiss keyboard
+      onTap: () => FocusScope.of(context).unfocus(), // ✅ dismiss keyboard
       child: Scaffold(
         backgroundColor: backgroundColor,
         body: ColorfulSafeArea(
@@ -57,13 +59,13 @@ class LoginScreen extends StatelessWidget {
                     Gap(20.h),
                     CustomTextField(
                       hintText: 'Enter your email',
-      
+
                       controller: controller.emailController,
                     ),
                     Gap(10.h),
                     CustomTextField(
                       hintText: 'Enter your password',
-      
+
                       controller: controller.passwordController,
                       isPassword: true,
                     ),
@@ -86,9 +88,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     Obx(() {
                       if (controller.isLoading.value) {
-                        return  CircularProgressIndicator(
-                          color: loaderColor,
-                        );
+                        return CircularProgressIndicator(color: loaderColor);
                       } else {
                         return PrimaryButton(
                           onTap: () {
@@ -123,6 +123,69 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    Gap(15.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey.withOpacity(0.5),
+                              thickness: 2,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
+                            child: Text(
+                              "or",
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onBackground.withOpacity(0.7),
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey.withOpacity(0.5),
+                              thickness: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(10.h),
+                    Bounceable(
+                      onTap: (){
+                        Get.to(()=> PhoneLoginScreen());
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        // height: 30.h,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 15.h,
+                          horizontal: 15.w,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                          borderRadius: BorderRadius.circular(10.r)
+                        ),
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Icon(Icons.mobile_screen_share_sharp, color: Get.theme.colorScheme.onPrimary,),
+                              Gap(15.w),
+                              Text("Login With Mobile Number", style: TextStyle(
+                                color: Colors.grey.shade900, fontSize: 15.sp,
+                              ),)
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

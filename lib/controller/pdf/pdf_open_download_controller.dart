@@ -15,7 +15,7 @@ class PdfOpenDownloadController extends GetxController{
   Future<void> openPdfInApp(String pdfUrl, String fileName) async {
     try {
       Get.dialog(
-        const Center(child: CircularProgressIndicator()),
+         Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary)),
         barrierDismissible: false,
       );
 
@@ -92,7 +92,7 @@ Future<void> downloadPdf(String pdfUrl, String fileName) async {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
+             CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary),
             const SizedBox(height: 16),
             Text('Downloading $fileName.pdf ...'),
           ],

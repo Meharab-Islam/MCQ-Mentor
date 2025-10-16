@@ -45,14 +45,16 @@ class SingleExamSectionController extends GetxController {
 
         // Navigate based on response
         if (examSections.value?.category != true) {
+          print("afasfasfhsajkfasdkjfadklsjfdisjfklsjfklsdjfikdsjfdklsjfsdkljfklsd${examSections.value!.data.id.toString()}");
           Get.to(() => WeeklyModelTestScreen(
             pdf: examSections.value!.pdf,
              examSectionId: examSections.value!.data.id.toString(),
-        examCategoryId: '',
+        examCategoryId: '0',
             title: examSections.value!.data.name.toString(),
             description: examSections.value!.data.description.toString(),
           ));
         } else {
+          print("sakhfioawehjakosdjfiosajfio jfioasjf ioejwfio jsario feiorahjfgkosjfioewhj oiarshgios ${examSections.value!.data.id}");
           Get.to(() => CategorySectionListScreen(
             examSectionId: examSections.value!.data.id,
           ));

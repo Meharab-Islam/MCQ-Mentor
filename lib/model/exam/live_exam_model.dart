@@ -36,11 +36,11 @@ class LiveExamData {
   final int id;
   final String examName;
   final String examDescription;
-  final int examSectionId;
-  final int? examCategoryId;
-  final int duration;
-  final int totalMarks;
-  final double cutMarks;
+  final String examSectionId;
+  final String? examCategoryId;
+  final String duration;
+  final String totalMarks;
+  final String cutMarks;
   final String examDate;
   final bool submitted;
 
@@ -61,11 +61,11 @@ class LiveExamData {
         id: json['id'] ?? 0,
         examName: json['exam_name'] ?? '',
         examDescription: json['exam_description'] ?? '',
-        examSectionId: json['exam_section_id'] ?? 0,
+        examSectionId: json['exam_section_id'] ?? "0",
         examCategoryId: json['exam_category_id'],
-        duration: json['duration'] ?? 0,
-        totalMarks: json['total_marks'] ?? 0,
-        cutMarks: (json['cut_marks'] ?? 0).toDouble(),
+        duration: json['duration'] ?? "0",
+        totalMarks: json['total_marks'] ?? "0",
+        cutMarks: (json['cut_marks'] ?? "0"),
         examDate: json['exam_date'] ?? '',
         submitted: json['submitted'] ?? false,
       );

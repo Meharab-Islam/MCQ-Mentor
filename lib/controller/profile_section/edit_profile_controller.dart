@@ -2,15 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:mcq_mentor/model/profile/edit_profile_model.dart';
 import 'package:mcq_mentor/model/profile/profile_model.dart';
 import 'package:mcq_mentor/utils/api_endpoint.dart';
-import 'package:mcq_mentor/utils/api_services.dart';
+import 'package:get_storage/get_storage.dart';
 
 class EditProfileController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  // reactive model for profile data
   final profile = EditProfileModel(
     name: '',
     address: '',
@@ -20,21 +20,21 @@ class EditProfileController extends GetxController {
     image: '',
   ).obs;
 
+  RxBool isLoading = false.obs;
+
   final imageFile = Rx<File?>(null);
   final picker = ImagePicker();
 
-  // TextEditingControllers
+  // Text Controllers
   final nameController = TextEditingController();
   final addressController = TextEditingController();
   final dobController = TextEditingController();
   final phoneController = TextEditingController();
 
-  final ApiService _apiService = ApiService();
-
-  /// Load initial data from StudentProfile
+  /// Set initial data from existing user profile
   void setInitialData(StudentProfile userData) {
-    // Convert DateTime to yyyy-MM-dd format for dobController
-    final formattedDob = userData.dateOfBirth.toIso8601String().split('T').first;
+    final formattedDob =
+        userData.dateOfBirth.toIso8601String().split('T').first;
 
     profile.value = EditProfileModel(
       name: userData.name,
@@ -49,13 +49,9 @@ class EditProfileController extends GetxController {
     addressController.text = userData.address;
     dobController.text = formattedDob;
     phoneController.text = userData.phone;
-
-    if (userData.image.isNotEmpty) {
-      imageFile.value = File(userData.image);
-    }
   }
 
-  /// Pick image
+  /// Pick profile image from gallery
   Future<void> pickImage() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
@@ -73,11 +69,11 @@ class EditProfileController extends GetxController {
     });
   }
 
-  /// Submit update to API
+  /// Submit updated profile (HTTP Multipart)
   Future<void> submitUpdate() async {
+    isLoading.value = true;
     if (!formKey.currentState!.validate()) return;
 
-    // Update model from form fields
     profile.update((val) {
       val?.name = nameController.text.trim();
       val?.address = addressController.text.trim();
@@ -85,21 +81,37 @@ class EditProfileController extends GetxController {
       val?.phone = phoneController.text.trim();
     });
 
-    try {
-      Map<String, dynamic> data = {
-        "name": profile.value.name,
-        "address": profile.value.address,
-        "date_of_birth": profile.value.dateOfBirth,
-        "phone": profile.value.phone,
-        "gender": profile.value.gender,
-      };
+    final Map<String, String> fields = {
+      "name": profile.value.name,
+      "address": profile.value.address,
+      "date_of_birth": profile.value.dateOfBirth,
+      "phone": profile.value.phone,
+      "gender": profile.value.gender,
+    };
 
-      final response = await _apiService.postMultipart(
-        ApiEndpoint.editProfile, // <-- Your API endpoint
-        data,
-        fileKey: "image",
-        file: imageFile.value,
-      );
+    final prefs = GetStorage();
+    final token = prefs.read('access_token');
+
+    final uri = Uri.parse(ApiEndpoint.editProfile);
+
+    final request = http.MultipartRequest('POST', uri)
+      ..fields.addAll(fields);
+
+    // Add file if exists
+    if (imageFile.value != null) {
+      final file = imageFile.value!;
+      request.files.add(await http.MultipartFile.fromPath('image', file.path));
+    }
+
+    // Add headers
+    request.headers['Accept'] = 'application/json';
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
         Get.snackbar(
@@ -108,27 +120,26 @@ class EditProfileController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green.shade600,
           colorText: Colors.white,
-          duration: const Duration(seconds: 2),
         );
       } else {
         Get.snackbar(
           "Error",
-          "Failed to update profile!",
+          "Failed to update profile. (${response.statusCode})\n$responseBody",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade600,
           colorText: Colors.white,
         );
       }
     } catch (e) {
-      debugPrint(e.toString());
       Get.snackbar(
         "Error",
-        "Something went wrong! ${e.toString()}",
+        "Something went wrong: $e",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
       );
     }
+    isLoading.value=false;
   }
 
   @override

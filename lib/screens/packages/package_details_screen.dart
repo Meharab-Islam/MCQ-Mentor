@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_sslcommerz/model/SSLCSdkType.dart';
 import 'package:flutter_sslcommerz/model/SSLCommerzInitialization.dart';
@@ -166,17 +166,35 @@ class PackageDetailScreen extends StatelessWidget {
       }),
     );
   }
+
+
+
+String generateTransactionId() {
+  const length = 15; // total length (including TXN)
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  final random = Random();
+
+  // We already used 3 characters for 'TXN', so generate 12 random characters
+  String randomPart = List.generate(length - 3, (index) {
+    return chars[random.nextInt(chars.length)];
+  }).join();
+  return 'TXN$randomPart';
+}
+
+
   void sslcommerz({required double totalPrise}) async {
   Sslcommerz sslcommerz = Sslcommerz(
     initializer: SSLCommerzInitialization(
-      multi_card_name: "bkash,rocket",
+      multi_card_name: "bkash,rocket, nagad",
       currency: SSLCurrencyType.BDT,
       product_category: "Digital Product",
       sdkType: SSLCSdkType.TESTBOX,
+      // store_id: "mcqme68ebaaa1d73aa",
+      // store_passwd: "mcqme68ebaaa1d73aa@ssl",
       store_id: "chudi68e82ba950be3",
       store_passwd: "chudi68e82ba950be3@ssl",
       total_amount: totalPrise,
-      tran_id: "TestTRX001",
+      tran_id: generateTransactionId(),
     ),
   );
 

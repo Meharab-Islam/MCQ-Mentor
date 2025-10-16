@@ -28,6 +28,7 @@ class RegistrationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: ColorfulSafeArea(
+        top: true,
         color: backgroundColor,
         child: SingleChildScrollView(
           child: Padding(

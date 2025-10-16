@@ -6,7 +6,8 @@ import 'package:mcq_mentor/screens/question/widgets/question_card.dart';
 import 'package:mcq_mentor/widget/custom_appbar.dart';
 
 class QuestionListPage extends StatefulWidget {
-  const QuestionListPage({super.key});
+   bool isShowAnalytics = true;
+   QuestionListPage({super.key, required this.isShowAnalytics});
 
   @override
   State<QuestionListPage> createState() => _QuestionListPageState();
@@ -38,8 +39,7 @@ class _QuestionListPageState extends State<QuestionListPage> {
       setState(() => _showCorrectMap[id] = !(_showCorrectMap[id] ?? false));
   void toggleAnalytics(int id) =>
       setState(() => _analyticsMap[id] = !(_analyticsMap[id] ?? false));
-  void toggleFavorite(int id) =>
-      setState(() => _favoriteMap[id] = !(_favoriteMap[id] ?? false));
+
 
   @override
   Widget build(BuildContext context) {
@@ -172,10 +172,11 @@ class _QuestionListPageState extends State<QuestionListPage> {
                     question: question,
                     showCorrect: showCorrect,
                     showAnalytics: showAnalytics,
+                    isShowAnalytics: widget.isShowAnalytics,
                     isFavorite: isFavorite,
                     onToggleCorrect: () => toggleShowCorrect(question.id),
                     onToggleAnalytics: () => toggleAnalytics(question.id),
-                    onToggleFavorite: () => toggleFavorite(question.id),
+                 
                   );
                 },
               );

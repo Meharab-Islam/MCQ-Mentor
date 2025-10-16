@@ -6,21 +6,24 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/constant/images.dart';
 import 'package:mcq_mentor/controller/theme_controller.dart';
+import 'package:mcq_mentor/controller/notification/notification_list_controller.dart';
 import 'package:mcq_mentor/screens/notification/notification_screen.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  const CustomAppbar({super.key, this.title = "MCQ Mentor"});
+  final bool showNotificationIcon;
+  const CustomAppbar({super.key, this.title = "MCQ Mentor", this.showNotificationIcon = true});
 
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
+    final notificationController = Get.put(NotificationController(), permanent: true);
 
     return AppBar(
       centerTitle: false,
       title: Row(
         children: [
-          Image.asset(AppImages.hat,width: 40,height: 30,),
+          Image.asset(AppImages.hat, width: 40, height: 30),
           Gap(5.w),
           Text(
             title,
@@ -29,13 +32,49 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
-        
-        IconButton(
-          icon: const Icon(Icons.notifications_none),
-          onPressed: () {
-           Get.to(()=> NotificationScreen());
-          },
-        ),
+        // 🔔 Notification Icon with Unread Badge
+       showNotificationIcon? Obx(() {
+          int unreadCount = notificationController.notifications
+              .where((n) => !n.isRead)
+              .length;
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon:  Icon(Icons.notifications_none, size: 30.sp,),
+                onPressed: () {
+                  Get.to(() => const NotificationScreen());
+                },
+              ),
+
+              // 🟥 Red badge for unread count
+              if (unreadCount > 0)
+                Positioned(
+                  right: 10,
+                  top: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                    child: Center(
+                      child: Text(
+                        unreadCount > 9 ? '9+' : unreadCount.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }):SizedBox(),
       ],
     );
   }

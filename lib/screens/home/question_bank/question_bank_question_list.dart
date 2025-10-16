@@ -96,9 +96,9 @@ class _QuestionBankQuestionListState extends State<QuestionBankQuestionList> {
                         : 0),
                 itemBuilder: (context, index) {
                   if (index == questionController.questions.length) {
-                    return const Padding(
+                    return  Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary)),
                     );
                   }
 
@@ -116,7 +116,6 @@ class _QuestionBankQuestionListState extends State<QuestionBankQuestionList> {
                     isFavorite: isFavorite,
                     onToggleCorrect: () => toggleShowCorrect(question.id),
                     onToggleAnalytics: () => toggleAnalytics(question.id),
-                    onToggleFavorite: () => toggleFavorite(question.id),
                   );
                 },
               );

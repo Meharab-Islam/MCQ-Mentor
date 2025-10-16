@@ -79,7 +79,7 @@ class OtpVerificationScreen extends StatelessWidget {
                   ),
                   Gap(10.h),
                   Text(
-                    'We have sent a 6-digit verification code to $email.',
+                    'We have sent a 4-digit verification code to $email.',
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,

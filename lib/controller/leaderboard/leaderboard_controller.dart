@@ -20,9 +20,7 @@ class LeaderboardController extends GetxController {
       final response = await ApiService().get(ApiEndpoint.leaderboard);
       final data = LeaderboardModel.fromJson(response.data);
 
-      // Sort by marks (Descending)
-      data.data.sort((a, b) => b.totalObtainedMarks.compareTo(a.totalObtainedMarks));
-
+      // No sorting here — backend provides the correct order
       leaderboard.assignAll(data.data);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load leaderboard: $e');

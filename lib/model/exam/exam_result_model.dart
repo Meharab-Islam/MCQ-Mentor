@@ -27,15 +27,16 @@ class ExamResultModel {
 }
 
 class ExamResultData {
-  final int userId;
-  final int totalQuestions;
-  final int answeredQuestions;
-  final int correctAnswers;
-  final int wrongAnswers;
-  final int notAnswered;
-  final double cutMarkPerWrong;
-  final double totalCutMarks;
-  final double totalMarksAfterCut;
+  final String userId;
+  final String totalQuestions;
+  final String answeredQuestions;
+  final String correctAnswers;
+  final String wrongAnswers;
+  final String notAnswered;
+  final String negativeMarksPerWrong;
+  final String totalNegativeMarks;
+  final String totalMarksAfterNegativeMarkings;
+  final String passMarks;
 
   ExamResultData({
     required this.userId,
@@ -44,22 +45,24 @@ class ExamResultData {
     required this.correctAnswers,
     required this.wrongAnswers,
     required this.notAnswered,
-    required this.cutMarkPerWrong,
-    required this.totalCutMarks,
-    required this.totalMarksAfterCut,
+    required this.negativeMarksPerWrong,
+    required this.totalNegativeMarks,
+    required this.totalMarksAfterNegativeMarkings,
+    required this.passMarks,
   });
 
   factory ExamResultData.fromJson(Map<String, dynamic> json) {
     return ExamResultData(
-      userId: json['user_id'] ?? 0,
-      totalQuestions: json['total_questions'] ?? 0,
-      answeredQuestions: json['answered_questions'] ?? 0,
-      correctAnswers: json['correct_answers'] ?? 0,
-      wrongAnswers: json['wrong_answers'] ?? 0,
-      notAnswered: json['not_answered'] ?? 0,
-      cutMarkPerWrong: (json['cut_mark_per_wrong'] ?? 0).toDouble(),
-      totalCutMarks: (json['total_cut_marks'] ?? 0).toDouble(),
-      totalMarksAfterCut: (json['total_marks_after_cut'] ?? 0).toDouble(),
+      userId: json['user_id'] ?? "0",
+      totalQuestions: json['total_questions'] ?? "0",
+      answeredQuestions: json['answered_questions'] ?? "0",
+      correctAnswers: json['correct_answers'] ?? "0",
+      wrongAnswers: json['wrong_answers'] ?? "0",
+      notAnswered: json['not_answered'] ?? "0",
+      negativeMarksPerWrong: json['negative_marks_per_wrong'] ?? "0",
+      totalNegativeMarks: json['total_negative_marks'] ?? "0",
+      totalMarksAfterNegativeMarkings: json['total_marks_after_negative_markings'] ?? "0",
+      passMarks: json['pass_marks']?? "0",
     );
   }
 
@@ -71,9 +74,10 @@ class ExamResultData {
       'correct_answers': correctAnswers,
       'wrong_answers': wrongAnswers,
       'not_answered': notAnswered,
-      'cut_mark_per_wrong': cutMarkPerWrong,
-      'total_cut_marks': totalCutMarks,
-      'total_marks_after_cut': totalMarksAfterCut,
+      'negative_marks_per_wrong': negativeMarksPerWrong,
+      'total_negative_marks': totalNegativeMarks,
+      'total_marks_after_negative_markings': totalMarksAfterNegativeMarkings,
+      'pass_marks': passMarks,
     };
   }
 }

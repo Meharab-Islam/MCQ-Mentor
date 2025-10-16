@@ -87,7 +87,7 @@ class QuizCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         // Navigate to the quiz exam screen
-                        Get.toNamed('/exam');
+                        // Get.toNamed('/exam');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,

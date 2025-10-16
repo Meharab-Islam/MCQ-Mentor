@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  "স্বাগতম MCQ Mentor এ! 🎓",
+                  "🎓 MCQ Mentor-এ আপনাকে স্বাগতম!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -90,8 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "👉 এখানে আপনি অ্যাসেসমেন্ট দিতে পারবেন, স্টাডি ম্যাটেরিয়াল পড়তে পারবেন এবং মাল্টিপ্লেয়ার কুইজ গেম খেলতে পারবেন।\n\n"
-                  "💡 আপনার সক্রিয় প্যাকেজ চেক করুন এবং শেখার আনন্দ উপভোগ করুন!",
+                  "📘 BCS, Primary, NTRCA, Admission ও Job Exam প্রস্তুতির একমাত্র স্মার্ট প্ল্যাটফর্ম।\n\n"
+                  "💪 প্র্যাকটিস করো, শিখো, জেতো — ✨ Smart Practice, Sure Success!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -181,9 +181,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 if (activityController.todaysExams.isEmpty) {
                   return Center(
-                    child: Text(
-                      'No exams available today',
-                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    child: Column(
+                      children: [
+                        Text(
+                          'No exams available today',
+                          style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                        ),
+                        SizedBox(height: 100.h,)
+                      ],
                     ),
                   );
                 }
@@ -308,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildActivitiesCard() {
     return Obx(() {
       if (activityController.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
+        return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
       }
 
       return Card(
@@ -322,16 +327,16 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildActivityRow(
                 title1: 'Total Live Exams:',
-                value1: '${activityController.totalExams.value}',
+                value1: activityController.totalExams.value,
                 title2: 'Remaining:',
-                value2: '${activityController.remainingExams.value}',
+                value2: activityController.remainingExams.value,
               ),
               Gap(8.h),
               _buildActivityRow(
                 title1: 'Total Marks:',
-                value1: '${activityController.totalMarks.value}',
+                value1: activityController.totalMarks.value,
                 title2: 'Total Duration:',
-                value2: "${activityController.totalDuration.value}",
+                value2: activityController.totalDuration.value,
               ),
             ],
           ),

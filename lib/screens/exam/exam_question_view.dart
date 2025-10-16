@@ -273,7 +273,7 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDisabled
                         ? Colors.grey
-                        : Colors.deepPurple,
+                        : Get.theme.colorScheme.onPrimary,
                     padding: EdgeInsets.symmetric(
                       horizontal: 40.w,
                       vertical: 14.h,
@@ -336,7 +336,58 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Html(data: question.question),
+             Builder(
+              builder: (_) {
+                final text = question.question ?? "No question text";
+                final bool isHtml = text.contains(
+                  RegExp(r"<[^>]+>"),
+                ); // detect HTML tags
+      
+                if (isHtml) {
+                  // 🧩 Render HTML content
+                  return Html(
+                    data: text,
+                    style: {
+                      "html": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "body": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "p": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(20.sp),
+                        color: Get.isDarkMode
+                            ? Colors.white
+                            : Colors.black87,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      "div": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "span": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                    },
+                  );
+                } else {
+                  // 📝 Render plain text
+                  return Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      color: Get.isDarkMode ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  );
+                }
+              },
+            ),
               SizedBox(height: 8.h),
 
               // ✅ Disable options if exam finished
@@ -382,10 +433,58 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                           ),
                           SizedBox(width: 8.w),
                           Expanded(
-                            child: Text(
-                              option,
-                              style: TextStyle(fontSize: 14.sp),
-                            ),
+                            child: Builder(
+              builder: (_) {
+                final text = option ?? "No question text";
+                final bool isHtml = text.contains(
+                  RegExp(r"<[^>]+>"),
+                ); // detect HTML tags
+      
+                if (isHtml) {
+                  // 🧩 Render HTML content
+                  return Html(
+                    data: text,
+                    style: {
+                      "html": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "body": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "p": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(14.sp),
+                        color: Get.isDarkMode
+                            ? Colors.white
+                            : Colors.black87,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      "div": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                      "span": Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                      ),
+                    },
+                  );
+                } else {
+                  // 📝 Render plain text
+                  return Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Get.isDarkMode ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  );
+                }
+              },
+            ),
                           ),
                         ],
                       ),

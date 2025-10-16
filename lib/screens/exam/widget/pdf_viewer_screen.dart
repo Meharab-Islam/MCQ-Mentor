@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -55,7 +56,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
         backgroundColor: Colors.blueAccent,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ?  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary))
           : localPath != null
               ? PDFView(
                   filePath: localPath,

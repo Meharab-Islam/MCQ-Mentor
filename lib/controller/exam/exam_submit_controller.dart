@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:mcq_mentor/controller/exam_scction/exam_section_controller.dart';
 import 'package:mcq_mentor/model/exam/exam_result_model.dart';
 import 'package:mcq_mentor/screens/exam/exam_result_view.dart';
 import 'package:mcq_mentor/utils/api_endpoint.dart';
@@ -23,7 +24,7 @@ class ExamSubmitController extends GetxController {
   RxBool isLoading = false.obs;
 
   var selectedAnswers = <int, String>{}.obs;
-
+        AssessmentController aa = Get.put(AssessmentController());
   @override
   void onInit() {
     super.onInit();
@@ -100,6 +101,8 @@ class ExamSubmitController extends GetxController {
         );
 
         // ✅ Navigate to result analytics page
+
+        aa.fetchExamSections();
         Get.off(() => ExamResultView(result: resultModel.data!));
       } else {
         // ❌ API returned failure

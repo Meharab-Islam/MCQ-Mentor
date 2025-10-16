@@ -11,6 +11,7 @@ class RegistrationController extends GetxController {
   // Text controllers
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
@@ -53,7 +54,7 @@ class RegistrationController extends GetxController {
       final data = {
         'name': nameController.text,
         'email': emailController.text,
-        //'address': addressController.text,
+        'phone': phoneController.text,
         'password': passwordController.text,
         'password_confirmation': confirmPasswordController.text,
       };
