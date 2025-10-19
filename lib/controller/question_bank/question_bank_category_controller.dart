@@ -78,7 +78,7 @@ class QuestionBankCategoryController extends GetxController {
       categories.addAll(data.data);
       currentPage.value = nextPage;
     } catch (e) {
-      Get.snackbar("Error", "Failed to load more categories: $e");
+      print('Error loading more categories: $e');
     } finally {
       isMoreLoading.value = false;
     }

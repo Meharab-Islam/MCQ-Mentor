@@ -45,7 +45,7 @@ class NotificationController extends GetxController {
       list.sort((a, b) {
         if (!a.isRead && b.isRead) return -1;
         if (a.isRead && !b.isRead) return 1;
-        return b.id.compareTo(a.id); // newest first
+         return b.id.compareTo(a.id); // newest first
       });
 
       notifications.value = list;
@@ -62,21 +62,15 @@ class NotificationController extends GetxController {
   }
 
   /// Mark a notification as read
-  void markAsRead(int index) {
-    final n = notifications[index];
-    if (!_readIds.contains(n.id)) {
-      _readIds.add(n.id);
-      _storage.write(_readIdsKey, _readIds);
-      notifications[index] = n.copyWith(isRead: true);
+void markAsRead(int index) {
+  final n = notifications[index];
+  if (!_readIds.contains(n.id)) {
+    _readIds.add(n.id);
+    _storage.write(_readIdsKey, _readIds);
 
-      // 🔹 Resort unread to top
-      final sorted = [...notifications];
-      sorted.sort((a, b) {
-        if (!a.isRead && b.isRead) return -1;
-        if (a.isRead && !b.isRead) return 1;
-        return b.id.compareTo(a.id);
-      });
-      notifications.value = sorted;
-    }
+    // ✅ Just mark it read and update that single item
+    notifications[index] = n.copyWith(isRead: true);
   }
+}
+
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:mcq_mentor/controller/exam_scction/exam_section_controller.dart';
-import 'package:mcq_mentor/controller/exam_scction/single_exam_section_controller.dart';
 import 'package:mcq_mentor/model/exam/exam_result_model.dart';
 import 'package:mcq_mentor/screens/exam/exam_result_view.dart';
 import 'package:mcq_mentor/utils/api_endpoint.dart';

@@ -11,20 +11,19 @@ import 'package:mcq_mentor/screens/archive/archive_exam_view.dart';
 import 'package:mcq_mentor/screens/archive/result_for_archive_view.dart';
 import 'package:mcq_mentor/screens/exam/exam_details_view.dart';
 import 'package:mcq_mentor/screens/favorite/favorite_list_screen.dart';
+import 'package:mcq_mentor/screens/pdf/all_pdf_list_screen.dart';
 import 'package:mcq_mentor/screens/rotine/all_routine_screen.dart';
 import 'package:mcq_mentor/widget/custom_appbar.dart';
 import 'package:mcq_mentor/widget/under_maintance_screen.dart';
 
 class WeeklyModelTestScreen extends StatefulWidget {
   final String title;
-  final String description;
   final String examSectionId;
   final String examCategoryId;
   final bool pdf;
 
   const WeeklyModelTestScreen({
     super.key,
-    required this.description,
     required this.title,
     required this.examSectionId,
     required this.examCategoryId,
@@ -79,44 +78,65 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
               Gap(8.h),
 
               /// 📄 Description
-              if (widget.description.isNotEmpty && widget.description != 'null')
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(10.sp),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withAlpha(150),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Html(data: widget.description),
-                ),
-
-              Gap(15.h),
+           
 
               /// 📚 Live Exams List
-              Obx(() {
-                if (liveExamController.isLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Get.theme.colorScheme.onPrimary,
-                    ),
-                  );
-                }
+           Obx(() {
+  final liveExamModel = liveExamController.liveExams.isNotEmpty
+      ? liveExamController.liveExams.first
+      : null;
 
-                if (liveExamController.liveExams.isEmpty) {
-                  return SizedBox();
-                }
+  final hasExamData = liveExamModel?.data.isNotEmpty ?? false;
 
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: liveExamController.liveExams.length,
-                  separatorBuilder: (_, __) => Gap(10.h),
-                  itemBuilder: (context, index) {
-                    final exam = liveExamController.liveExams[index];
-                    return _examCard(context, exam);
-                  },
-                );
-              }),
+  if (liveExamController.isLoading.value) {
+    return Center(
+      child: CircularProgressIndicator(
+        color: Get.theme.colorScheme.onPrimary,
+      ),
+    );
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // Always show message if available
+      if (liveExamController.message.isNotEmpty)
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(10.sp),
+          decoration: BoxDecoration(
+            color: Colors.amber.withAlpha(150),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Text(
+            liveExamController.message.value,
+            style: TextStyle(fontSize: 14.sp),
+          textAlign: TextAlign.center,
+          ),
+        ),
+
+      Gap(15.h),
+
+      // Show list only if exam data is available
+      if (hasExamData)
+        Expanded(
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: liveExamModel!.data.length,
+            separatorBuilder: (_, __) => Gap(10.h),
+            itemBuilder: (context, index) {
+              final exam = liveExamModel.data[index];
+              return _examCard(context, exam);
+            },
+          ),
+        ),
+
+      // If no data, just don't show anything here (no "No exams found" message)
+    ],
+  );
+}),
+
 
               Gap(15.h),
 
@@ -185,7 +205,7 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
                           icon: Icons.picture_as_pdf_outlined,
                           title: 'PDFs',
                             onTap: (){
-                      Get.to(()=> UnderMaintanceScreen());
+                      Get.to(()=> PdfListPage(categoryId: widget.examCategoryId, examSectionId: widget.examSectionId),);
                     }
                         )
                       : const SizedBox(),

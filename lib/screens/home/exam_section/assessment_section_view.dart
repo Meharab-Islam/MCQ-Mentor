@@ -113,7 +113,6 @@ class _AssessmentSectionViewState extends State<AssessmentSectionView>
               examCategoryId: '',
               examSectionId: section.id.toString(),
               title: section.name.toString(),
-              description: section.description.toString(),
             ),
           );
         } else {
@@ -160,14 +159,14 @@ class _AssessmentSectionViewState extends State<AssessmentSectionView>
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            isLive ? "Live" : "Offline",
-            style: TextStyle(
-              fontSize: 14,
-              color: isLive ? Colors.green : Colors.red,
-            ),
-          ),
+          // const SizedBox(height: 6),
+          // Text(
+          //   isLive ? "Live" : "Offline",
+          //   style: TextStyle(
+          //     fontSize: 14,
+          //     color: isLive ? Colors.green : Colors.red,
+          //   ),
+          // ),
         ],
       ),
     );

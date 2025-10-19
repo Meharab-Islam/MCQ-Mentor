@@ -56,7 +56,7 @@ class QuestionController extends GetxController {
         page.value = response.data['pagination']['current_page'] ?? 1;
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch questions: $e');
+      Get.snackbar('Error', 'Failed to fetch questions');
     } finally {
       isLoading(false);
     }

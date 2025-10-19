@@ -9,22 +9,23 @@ class PdfController extends GetxController {
   var isLoading = false.obs;
   var pdfList = <PdfFile>[].obs;
 
-  Future<void> fetchPdfList(int categoryId) async {
+  Future<void> fetchPdfList(String categoryId, String examSectionId) async {
     try {
       isLoading(true);
 
       final response = await _apiService.get(ApiEndpoint.allPDF, queryParameters: {
         "exam_category_id": categoryId,
+        "exam_section_id": examSectionId,
       });
 
       if (response.statusCode == 200) {
         final parsedResponse = PdfResponse.fromJson(response.data);
         pdfList.assignAll(parsedResponse.data);
       } else {
-        Get.snackbar('Error', 'Failed to load PDF list');
+       print('Server error: ${response.statusCode}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Unable to fetch PDF list: $e');
+      print('Error fetching PDF list: $e');
     } finally {
       isLoading(false);
     }

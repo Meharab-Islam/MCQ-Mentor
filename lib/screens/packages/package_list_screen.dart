@@ -90,7 +90,7 @@ class PackageListScreen extends StatelessWidget {
                               child: Text(
                                 package.name,
                                 style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Container(
@@ -124,7 +124,7 @@ class PackageListScreen extends StatelessWidget {
                             Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
                             SizedBox(width: 4.w),
                             Text(
-                              "Duration: ${package.duration}",
+                              "Duration: ${package.duration} Days",
                               style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
                             ),
                           ],

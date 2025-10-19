@@ -30,11 +30,10 @@ class CustomDrawer extends StatelessWidget {
       child: Column(
         children: [
           // 🔹 HEADER SECTION (Compact & Stylish)
-          
           Obx(() {
             final isLoading = profileController.isLoading.value;
             final student = profileController.studentProfile.value;
-      
+
             return Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -42,7 +41,10 @@ class CustomDrawer extends StatelessWidget {
                 gradient: LinearGradient(
                   colors: isDark
                       ? [const Color(0xFF23283E), const Color(0xFF1B1F33)]
-                      : [const Color.fromARGB(255, 14, 37, 76), const Color.fromARGB(255, 9, 127, 206)],
+                      : [
+                          const Color.fromARGB(255, 14, 37, 76),
+                          const Color.fromARGB(255, 9, 127, 206),
+                        ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -63,48 +65,62 @@ class CustomDrawer extends StatelessWidget {
                   // Profile image with subtle animation
                   Gap(30.h),
                   AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      radius: 40.r,
-                      backgroundColor: Colors.white,
-                      child: isLoading
-                          ? const CircularProgressIndicator(
-                              color: Colors.white)
-                          : ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: student?.image.isNotEmpty == true
-                                    ? student!.image
-                                    : 'https://i.pinimg.com/564x/39/33/f6/3933f64de1724bb67264818810e3f2cb.jpg',
-                                height: 80.h,
-                                width: 80.h,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    const CircularProgressIndicator(
-                                        strokeWidth: 2, color: Colors.white),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.person,
-                                        color: Colors.white, size: 40),
-                              ),
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 8,
+                              spreadRadius: 2,
                             ),
-                    ),
-                  )
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 40.r,
+                          backgroundColor: Colors.white,
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : ClipOval(
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        (student?.image != null &&
+                                            student!.image!.isNotEmpty)
+                                        ? student.image!
+                                        : 'https://i.pinimg.com/564x/39/33/f6/3933f64de1724bb67264818810e3f2cb.jpg',
+                                    height: 80.h,
+                                    width: 80.h,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                          color: Colors.blueGrey.withOpacity(
+                                            0.2,
+                                          ),
+                                          child: const Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                            size: 40,
+                                          ),
+                                        ),
+                                  ),
+                                ),
+                        ),
+                      )
                       .animate()
                       .scale(duration: 500.ms, curve: Curves.easeOutBack)
                       .fadeIn(duration: 400.ms),
-      
+
                   SizedBox(height: 10.h),
-      
+
                   // User Name
                   Text(
                     isLoading ? "Loading..." : student?.name ?? 'Guest User',
@@ -133,7 +149,7 @@ class CustomDrawer extends StatelessWidget {
               ),
             );
           }),
-      
+
           // 🔹 Drawer Items
           Expanded(
             child: ListView(
@@ -146,13 +162,13 @@ class CustomDrawer extends StatelessWidget {
                   onTap: () => Navigator.pop(context),
                   isDark: isDark,
                 ),
-                
+
                 _drawerTile(
                   icon: Icons.settings_rounded,
                   title: "Settings",
                   delay: 200,
                   onTap: () {
-                     Get.to(()=> UnderMaintanceScreen());
+                    Get.to(() => UnderMaintanceScreen());
                   },
                   isDark: isDark,
                 ),
@@ -161,15 +177,11 @@ class CustomDrawer extends StatelessWidget {
                   title: "Premium Features",
                   delay: 300,
                   onTap: () {
-                    Get.to(()=> UnderMaintanceScreen());
+                    Get.to(() => UnderMaintanceScreen());
                   },
                   isDark: isDark,
                 ),
-                const Divider(
-                  indent: 16,
-                  endIndent: 16,
-                  thickness: 0.6,
-                ),
+                const Divider(indent: 16, endIndent: 16, thickness: 0.6),
                 _drawerTile(
                   icon: Icons.logout_rounded,
                   title: "Logout",
@@ -181,7 +193,7 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
-      
+
           // 🔹 Footer
           Padding(
             padding: EdgeInsets.only(bottom: 10.h),
@@ -211,29 +223,31 @@ class CustomDrawer extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      child: ListTile(
-        leading: Icon(icon, color: iconColor, size: 24.sp),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        tileColor:
-            isDark ? Colors.white.withOpacity(0.05) : Colors.blue[50]!.withOpacity(0.4),
-        hoverColor: isDark
-            ? Colors.white.withOpacity(0.1)
-            : Colors.blueAccent.withOpacity(0.15),
-        onTap: onTap,
-      )
-          .animate(delay: delay.ms)
-          .slideX(begin: -0.3, duration: 400.ms, curve: Curves.easeOutCubic)
-          .fadeIn(duration: 400.ms),
+      child:
+          ListTile(
+                leading: Icon(icon, color: iconColor, size: 24.sp),
+                title: Text(
+                  title,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                tileColor: isDark
+                    ? Colors.white.withOpacity(0.05)
+                    : Colors.blue[50]!.withOpacity(0.4),
+                hoverColor: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.blueAccent.withOpacity(0.15),
+                onTap: onTap,
+              )
+              .animate(delay: delay.ms)
+              .slideX(begin: -0.3, duration: 400.ms, curve: Curves.easeOutCubic)
+              .fadeIn(duration: 400.ms),
     );
   }
 }

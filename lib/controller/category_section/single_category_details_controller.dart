@@ -49,7 +49,6 @@ class SingleCategoryDetailsController extends GetxController {
               examSectionId: examSectionId,
               examCategoryId: categoryId,
               title: examSections.value!.data.name,
-              description: examSections.value!.data.description,
             ));
       } else {
         // Close dialog if error

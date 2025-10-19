@@ -21,7 +21,6 @@ class EditProfileController extends GetxController {
   ).obs;
 
   RxBool isLoading = false.obs;
-
   final imageFile = Rx<File?>(null);
   final picker = ImagePicker();
 
@@ -31,48 +30,56 @@ class EditProfileController extends GetxController {
   final dobController = TextEditingController();
   final phoneController = TextEditingController();
 
-  /// Set initial data from existing user profile
+  /// Initialize profile data from existing user
   void setInitialData(StudentProfile userData) {
-    final formattedDob =
-        userData.dateOfBirth.toIso8601String().split('T').first;
+    final formattedDob = userData.dateOfBirth != null
+        ? userData.dateOfBirth!.toIso8601String().split('T').first
+        : '';
 
     profile.value = EditProfileModel(
       name: userData.name,
-      address: userData.address,
+      address: userData.address ?? '',
       dateOfBirth: formattedDob,
-      phone: userData.phone,
-      gender: userData.gender,
-      image: userData.image,
+      phone: userData.phone ?? '',
+      gender: userData.gender ?? 'male',
+      image: userData.image ?? '',
     );
 
     nameController.text = userData.name;
-    addressController.text = userData.address;
+    addressController.text = userData.address ?? '';
     dobController.text = formattedDob;
-    phoneController.text = userData.phone;
+    phoneController.text = userData.phone ?? '';
   }
 
   /// Pick profile image from gallery
   Future<void> pickImage() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      imageFile.value = File(picked.path);
-      profile.update((val) {
-        val?.image = picked.path;
-      });
+    try {
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null) {
+        imageFile.value = File(picked.path);
+        profile.update((val) => val?.image = picked.path);
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to pick image: $e",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
     }
   }
 
   /// Update gender
   void updateGender(String value) {
-    profile.update((val) {
-      val?.gender = value;
-    });
+    profile.update((val) => val?.gender = value);
   }
 
-  /// Submit updated profile (HTTP Multipart)
+  /// Submit updated profile (with Multipart if image exists)
   Future<void> submitUpdate() async {
+   
+
     isLoading.value = true;
-    if (!formKey.currentState!.validate()) return;
 
     profile.update((val) {
       val?.name = nameController.text.trim();
@@ -81,7 +88,7 @@ class EditProfileController extends GetxController {
       val?.phone = phoneController.text.trim();
     });
 
-    final Map<String, String> fields = {
+    final fields = {
       "name": profile.value.name,
       "address": profile.value.address,
       "date_of_birth": profile.value.dateOfBirth,
@@ -93,11 +100,9 @@ class EditProfileController extends GetxController {
     final token = prefs.read('access_token');
 
     final uri = Uri.parse(ApiEndpoint.editProfile);
+    final request = http.MultipartRequest('POST', uri)..fields.addAll(fields);
 
-    final request = http.MultipartRequest('POST', uri)
-      ..fields.addAll(fields);
-
-    // Add file if exists
+    // Add image file if selected
     if (imageFile.value != null) {
       final file = imageFile.value!;
       request.files.add(await http.MultipartFile.fromPath('image', file.path));
@@ -105,9 +110,7 @@ class EditProfileController extends GetxController {
 
     // Add headers
     request.headers['Accept'] = 'application/json';
-    if (token != null) {
-      request.headers['Authorization'] = 'Bearer $token';
-    }
+    if (token != null) request.headers['Authorization'] = 'Bearer $token';
 
     try {
       final response = await request.send();
@@ -138,8 +141,9 @@ class EditProfileController extends GetxController {
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
       );
+    } finally {
+      isLoading.value = false;
     }
-    isLoading.value=false;
   }
 
   @override

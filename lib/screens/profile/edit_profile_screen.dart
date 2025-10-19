@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/controller/profile_section/edit_profile_controller.dart';
@@ -258,7 +257,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       keyboardType: keyboardType,
       readOnly: readOnly,
       onTap: onTap,
-      validator: (val) => val!.isEmpty ? "Enter $label" : null,
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,

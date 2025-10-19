@@ -55,7 +55,7 @@ class QuestionBankQuestionController extends GetxController {
       page.value = data.currentPage;
       totalPages.value = data.totalPages;
     } catch (e) {
-      Get.snackbar("Error", "Failed to load questions: $e");
+     print('Error fetching question bank questions: $e');
     } finally {
       isLoading.value = false;
     }

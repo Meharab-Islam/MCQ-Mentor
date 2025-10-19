@@ -78,7 +78,7 @@ class OtpController extends GetxController {
         Get.snackbar('Error', 'Invalid OTP: ${response.statusMessage}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      print('Error verifying OTP: $e');
     } finally {
       isLoading.value = false;
     }
@@ -106,7 +106,7 @@ class OtpController extends GetxController {
         Get.snackbar('Error', 'Failed to resend OTP: ${response.statusMessage}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      print('Error resending OTP: $e');
     } finally {
       isLoading.value = false;
     }

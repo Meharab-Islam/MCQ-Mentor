@@ -54,7 +54,7 @@ class ResultForArchiveController extends GetxController {
         currentPage++;
       }
     } catch (e) {
-      Get.snackbar("Error", "Failed to fetch results: $e");
+      print('Error fetching results for archive: $e');
     } finally {
       isLoading.value = false;
       isMoreLoading.value = false;

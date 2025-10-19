@@ -6,17 +6,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:mcq_mentor/controller/auth/registration_controller.dart';
+import 'package:mcq_mentor/controller/auth/mobile_auth_controller.dart';
 import 'package:mcq_mentor/widget/logo.dart';
 import 'package:mcq_mentor/widget/primary_button.dart';
-import 'package:mcq_mentor/controller/auth/login_controller.dart';
 
 class PhoneLoginScreen extends StatelessWidget {
   const PhoneLoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    RegistrationController registrationController = Get.put(RegistrationController());
+    MobileAuthController mobileAuthController = Get.put(MobileAuthController());
 
     final colorScheme = Theme.of(context).colorScheme;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -58,7 +57,6 @@ class PhoneLoginScreen extends StatelessWidget {
 
                 // 🔹 Phone input with country picker
                 IntlPhoneField(
-                  
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     labelStyle: TextStyle(color: Colors.black),
@@ -69,23 +67,24 @@ class PhoneLoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     filled: true,
-                    
                     fillColor: colorScheme.onBackground.withOpacity(
                       isDarkMode ? 0.1 : 0.05,
                     ),
                   ),
-                  controller: registrationController.phoneController,
+                  // controller: mobileAuthController.phoneController,
                   initialCountryCode: 'BD',
                   cursorColor: Colors.black,
                   onChanged: (phone) {
-                    // controller.phoneNumber.value = phone.completeNumber;
+                    // Save full number with country code
+                    mobileAuthController.phoneController.text =
+                        phone.completeNumber;
                   },
                 ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.3),
 
                 Gap(20.h),
 
                 Obx(() {
-                  if (registrationController.isLoading.value) {
+                  if (mobileAuthController.isLoading.value) {
                     return CircularProgressIndicator(
                       color: colorScheme.onPrimary,
                     ).animate().fadeIn();
@@ -93,7 +92,7 @@ class PhoneLoginScreen extends StatelessWidget {
                     return PrimaryButton(
                       title: "Send OTP",
                       onTap: () {
-                        registrationController.register();
+                        mobileAuthController.register();
                       },
                     ).animate().scale(
                       duration: 400.ms,
@@ -103,69 +102,74 @@ class PhoneLoginScreen extends StatelessWidget {
                 }),
 
                 Gap(30.h),
-   
-                    SizedBox(
-                      width: double.infinity,
+
+                SizedBox(
+                  width: double.infinity,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.grey.withOpacity(0.5),
+                          thickness: 2,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Text(
+                          "or",
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onBackground.withOpacity(0.7),
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.grey.withOpacity(0.5),
+                          thickness: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Gap(10.h),
+                Bounceable(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    // height: 30.h,
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15.h,
+                      horizontal: 15.w,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Center(
                       child: Row(
                         children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.withOpacity(0.5),
-                              thickness: 2,
-                            ),
+                          Icon(
+                            Icons.email_outlined,
+                            color: Get.theme.colorScheme.onPrimary,
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
-                            child: Text(
-                              "or",
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onBackground.withOpacity(0.7),
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.withOpacity(0.5),
-                              thickness: 2,
+                          Gap(15.w),
+                          Text(
+                            "Login With Email",
+                            style: TextStyle(
+                              color: Colors.grey.shade900,
+                              fontSize: 15.sp,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Gap(10.h),
-                    Bounceable(
-                      onTap: (){
-                        Get.back();
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        // height: 30.h,
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15.h,
-                          horizontal: 15.w,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.circular(10.r)
-                        ),
-                        child: Center(
-                          child: Row(
-                            children: [
-                              Icon(Icons.email_outlined, color: Get.theme.colorScheme.onPrimary,),
-                              Gap(15.w),
-                              Text("Login With Email", style: TextStyle(
-                                color: Colors.grey.shade900, fontSize: 15.sp,
-                              ),)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.2),
+                  ),
+                ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.2),
               ],
             ),
           ),

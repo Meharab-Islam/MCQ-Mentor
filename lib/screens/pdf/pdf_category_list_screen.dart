@@ -32,7 +32,7 @@ class PdfCategoryListScreen extends StatelessWidget {
             final category = controller.categoryList[index];
             return Bounceable(
               onTap: (){
-                Get.to(()=> PdfListPage(categoryId: category.id,));
+                Get.to(()=> PdfListPage(categoryId: category.id.toString(), examSectionId:"",));
               },
               child: Card(
                 elevation: 2,

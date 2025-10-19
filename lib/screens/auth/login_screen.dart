@@ -4,6 +4,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:mcq_mentor/controller/auth/google_auth_controller.dart';
 import 'package:mcq_mentor/controller/auth/login_controller.dart';
 import 'package:mcq_mentor/screens/auth/forget_password_screen.dart';
 import 'package:mcq_mentor/screens/auth/phone_login_screen.dart';
@@ -18,6 +19,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoginController controller = Get.find<LoginController>();
+    GoogleAuthController googleAuthController = Get.put(GoogleAuthController());
 
     // Access the current theme's color scheme
     final colorScheme = Theme.of(context).colorScheme;
@@ -44,7 +46,7 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Gap(120.h),
+                    Gap(70.h),
                     const LogoWidget(),
                     Gap(20.h),
                     Text(
@@ -185,7 +187,64 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    Gap(10.h),
+                   Obx(() {
+  final loading = googleAuthController.isLoading.value;
+
+  return Bounceable(
+    onTap: loading
+        ? null
+        : () {
+            googleAuthController.signInWithGoogle();
+          },
+    child: Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: 15.h,
+        horizontal: 15.w,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey,
+        ),
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Center(
+        child: loading
+            ? SizedBox(
+                height: 20.h,
+                width: 20.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.grey.shade700),
+                ),
+              )
+            : Row(
+                // mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.network(
+                    'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                    width: 25.w,
+                    height: 25.h,
+                  ),
+                  Gap(15.w),
+                  Text(
+                    "Login With Google",
+                    style: TextStyle(
+                      color: Colors.grey.shade900,
+                      fontSize: 15.sp,
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    ),
+  );
+}),
+
                   ],
                 ),
               ),

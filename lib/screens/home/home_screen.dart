@@ -2,6 +2,7 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:mcq_mentor/constant/images.dart';
 import 'package:mcq_mentor/controller/exam/todays_activities_controller.dart';
+import 'package:mcq_mentor/controller/profile_section/profile_controller.dart';
 import 'package:mcq_mentor/screens/home/exam_section/assessment_section_view.dart';
 import 'package:mcq_mentor/screens/home/exam_section/quiz_card.dart';
 import 'package:mcq_mentor/screens/home/question_bank/question_bank_section.dart';
@@ -26,7 +28,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static bool _dialogShown = false;
-  final activityController = Get.put(TodaysActivitiesController());
+  final TodaysActivitiesController activityController = Get.put(
+    TodaysActivitiesController(),
+  );
+  final ProfileController profileController = Get.put(ProfileController());
 
   @override
   void initState() {
@@ -139,7 +144,129 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Gap(5.h),
-              FadeInDown(child: _buildWarningBanner()),
+              Obx(() {
+                if (profileController.isLoading.value) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Get.theme.colorScheme.onPrimary,
+                    ),
+                  );
+                } else {
+                  if (profileController.studentProfile.value!.hasPackage) {
+                    // add welcome back banner
+                    return Stack(
+                      children: [
+                       
+                        Container(
+                          // margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                          padding: EdgeInsets.all(16.w),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.blue.shade600, Colors.blue.shade400],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(20.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              // Optional avatar or icon
+                              CircleAvatar(
+                                radius: 28.r,
+                                backgroundColor: Colors.white,
+                                child: ClipOval(
+                                  child: CachedNetworkImage(
+                                          imageUrl:
+                                              (profileController.studentProfile.value!.image != null &&
+                                                  profileController.studentProfile.value!.image!.isNotEmpty)
+                                              ? profileController.studentProfile.value!.image!
+                                              : 'https://i.pinimg.com/564x/39/33/f6/3933f64de1724bb67264818810e3f2cb.jpg',
+                                          height: 80.h,
+                                          width: 80.h,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => const Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                                color: Colors.blueGrey.withOpacity(
+                                                  0.2,
+                                                ),
+                                                child: const Icon(
+                                                  Icons.person,
+                                                  color: Colors.white,
+                                                  size: 40,
+                                                ),
+                                              ),
+                                        ),
+                                ),
+                              ),
+                              SizedBox(width: 16.w),
+                        
+                              // Welcome text
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Welcome Back!",
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      profileController.studentProfile.value!.name.toString(),
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    Text(
+                                      "Ready for your next challenge?",
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      // 🎓 Hat Icon at top-left
+    Positioned(
+      top: 12.h,
+      right: 0.w,
+      child: Text(
+        "🎓",
+        style: TextStyle(fontSize: 60.sp),
+      ),
+    ),
+                       
+                       ],
+                    );
+                  } else {
+                    return FadeInDown(child: _buildWarningBanner());
+                  }
+                }
+              }),
+
               Gap(15.h),
 
               FadeInLeft(child: _buildSectionHeader('Assessment Section')),
@@ -176,7 +303,11 @@ class _HomeScreenState extends State<HomeScreen> {
               Obx(() {
                 if (activityController.isLoading.value &&
                     activityController.todaysExams.isEmpty) {
-                  return Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Get.theme.colorScheme.onPrimary,
+                    ),
+                  );
                 }
 
                 if (activityController.todaysExams.isEmpty) {
@@ -187,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'No exams available today',
                           style: TextStyle(fontSize: 16.sp, color: Colors.grey),
                         ),
-                        SizedBox(height: 100.h,)
+                        SizedBox(height: 100.h),
                       ],
                     ),
                   );
@@ -313,7 +444,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildActivitiesCard() {
     return Obx(() {
       if (activityController.isLoading.value) {
-        return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
+        return Center(
+          child: CircularProgressIndicator(
+            color: Get.theme.colorScheme.onPrimary,
+          ),
+        );
       }
 
       return Card(

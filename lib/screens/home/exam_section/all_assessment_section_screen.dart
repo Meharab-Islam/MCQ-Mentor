@@ -80,7 +80,6 @@ class AllAssessmentScreen extends StatelessWidget {
                         examCategoryId: '',
                         examSectionId: section.id.toString(),
                         title: section.name.toString(),
-                        description: section.description.toString(),
                       ),
                     );
                   } else {
@@ -147,14 +146,14 @@ class AllAssessmentScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              isLive ? "Live" : "Offline",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isLive ? Colors.green : Colors.red,
-                              ),
-                            ),
+                            // const SizedBox(height: 6),
+                            // Text(
+                            //   isLive ? "Live" : "Offline",
+                            //   style: TextStyle(
+                            //     fontSize: 14,
+                            //     color: isLive ? Colors.green : Colors.red,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),

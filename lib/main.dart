@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -5,7 +6,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:mcq_mentor/constant/colors.dart';
 import 'package:mcq_mentor/constant/images.dart';
 import 'package:mcq_mentor/controller/auth/login_controller.dart';
+import 'package:mcq_mentor/controller/profile_section/profile_controller.dart';
 import 'package:mcq_mentor/controller/theme_controller.dart'; // ✅ new import
+import 'package:mcq_mentor/firebase_options.dart';
 import 'package:mcq_mentor/screens/home/CustomBottomNavBar.dart';
 import 'package:mcq_mentor/utils/app_binding.dart';
 import 'package:mcq_mentor/screens/auth/login_screen.dart';
@@ -13,6 +16,9 @@ import 'package:mcq_mentor/widget/logo_loader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   await _initApp();
 
   runApp(const MyApp());
@@ -24,7 +30,7 @@ Future<void> _initApp() async {
   } catch (e) {
     debugPrint('GetStorage init error: $e');
   }
-
+  Get.put(ProfileController());
   Get.put(LoginController());
   Get.put(ThemeController()); // ✅ register theme controller
 }

@@ -64,7 +64,7 @@ class QuestionBankSubCategoryController extends GetxController {
       totalPage.value = data.pagination.totalPage;
       currentPage.value = data.pagination.currentPage;
     } catch (e) {
-      Get.snackbar("Error", "Failed to load subcategories: $e");
+      print('Error fetching subcategories: $e');
     } finally {
       isLoading.value = false;
       isMoreLoading.value = false;

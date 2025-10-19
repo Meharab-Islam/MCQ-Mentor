@@ -51,7 +51,6 @@ class SingleExamSectionController extends GetxController {
              examSectionId: examSections.value!.data.id.toString(),
         examCategoryId: '0',
             title: examSections.value!.data.name.toString(),
-            description: examSections.value!.data.description.toString(),
           ));
         } else {
           print("sakhfioawehjakosdjfiosajfio jfioasjf ioejwfio jsario feiorahjfgkosjfioewhj oiarshgios ${examSections.value!.data.id}");

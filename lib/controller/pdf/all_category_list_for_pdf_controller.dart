@@ -22,10 +22,10 @@ class AllCategoryListForPdfController extends GetxController {
           data.map((e) => AllCategoryListForPdf.fromJson(e)).toList(),
         );
       } else {
-        Get.snackbar('Error', 'Failed to load categories');
+       
       }
     } catch (e) {
-      Get.snackbar('Error', 'Something went wrong: $e');
+    print(e);
     } finally {
       isLoading.value = false;
     }

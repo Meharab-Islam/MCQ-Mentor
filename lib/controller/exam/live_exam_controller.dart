@@ -6,50 +6,54 @@ import 'package:mcq_mentor/utils/api_endpoint.dart';
 class LiveExamController extends GetxController {
   /// Reactive variables
   final isLoading = false.obs;
-  final liveExams = <LiveExamData>[].obs;
+  final liveExams = <LiveExamModel>{}.obs;
   final message = ''.obs;
   final date = ''.obs;
+final exams = <LiveExamData>[].obs;     // ✅ individual exam items
+final isSuccess = false.obs;           // ✅ success flag from API
 
   final ApiService _apiService = ApiService();
 
   /// Fetch live exams filtered by query parameters
   Future<void> fetchLiveExams({
-    required String examSectionId,
-    String? examCategoryId,
-  }) async {
-    try {
-      isLoading.value = true;
-      message.value = '';
-      liveExams.clear();
+  required String examSectionId,
+  String? examCategoryId,
+}) async {
+  try {
+    isLoading.value = true;
+    exams.clear();
+    message.value = '';
+    date.value = '';
+    isSuccess.value = false;
 
-      // ✅ Prepare query parameters
-      final queryParams = {
-        'exam_section_id': examSectionId,
-        if (examCategoryId != null) 'exam_category_id': examCategoryId,
-      };
+    final queryParams = {
+      'exam_section_id': examSectionId,
+      if (examCategoryId != null) 'exam_category_id': examCategoryId,
+    };
 
-      // ✅ API Call
-      final response = await _apiService.get(
-        ApiEndpoint.liveExams,
-        queryParameters: queryParams,
-      );
+    final response = await _apiService.get(
+      ApiEndpoint.liveExams,
+      queryParameters: queryParams,
+    );
 
-      // ✅ Parse Response
-      final data = LiveExamModel.fromJson(response.data);
+    final result = LiveExamModel.fromJson(response.data);
 
-      message.value = data.message;
-      date.value = data.date;
-      liveExams.assignAll(data.data);
+    // ✅ Assign parsed data
+    isSuccess.value = result.success;
+    message.value = result.message;
+    date.value = result.date;
+    exams.addAll(result.data);
 
-      // ✅ Debug info
-      print('✅ Live Exams fetched successfully: ${liveExams.length}');
-    } catch (e, s) {
-      // Log full error for debugging
-      print('❌ Error fetching live exams: $e\n$s');
-      message.value = "Failed to fetch live exams";
-      liveExams.clear();
-    } finally {
-      isLoading.value = false;
-    }
+    print('✅ Live Exams fetched: ${message.value}');
+  } catch (e, s) {
+    print('❌ Error fetching live exams: $e\n$s');
+    isSuccess.value = false;
+    message.value = "Failed to fetch live exams";
+    exams.clear();
+  } finally {
+    isLoading.value = false;
   }
+}
+
+
 }

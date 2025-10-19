@@ -29,7 +29,7 @@ class ExamDetailsController extends GetxController {
         examDetails.value =
             ExamDetailsModel.fromJson(response.data['data']);
       } else {
-        Get.snackbar('Error', 'Failed to load exam details');
+        debugPrint('Failed to load exam details');
       }
     } catch (e) {
       debugPrint('Error fetching exam details: $e');

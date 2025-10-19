@@ -1,9 +1,12 @@
 class ApiEndpoint {
   // static const String baseUrl = 'http://192.168.0.102:8000/api';
-  // static const String baseUrl = 'http://192.168.0.100:8000/api';
+  // static const String baseUrl = 'http://192.168.0.13:8000/api';
   static const String baseUrl = 'https://api.mcqmentor.com/mcq_web_app/public/api';
   static const String login = '$baseUrl/login';
+  static const String loginWithPhone = '$baseUrl/login-otp';
+  static const String loginWithGoogle = '$baseUrl/socialite-login';
   static const String register = '$baseUrl/register';
+  static const String phoneRegister = '$baseUrl/register-with-phone';
   static const String forgotPassword = '$baseUrl/forget-password';
   static const String resetPassword = '$baseUrl/reset-password';
   static const String verifyOtp = '$baseUrl/verify-otp';

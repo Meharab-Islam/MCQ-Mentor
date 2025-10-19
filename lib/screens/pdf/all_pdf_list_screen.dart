@@ -10,13 +10,14 @@ class PdfListPage extends StatelessWidget {
   final controller = Get.put(PdfController());
   final pdfController = Get.put(PdfOpenDownloadController());
 
-  int categoryId;
+  String categoryId;
+  String examSectionId;
 
-  PdfListPage({super.key, required this.categoryId});
+  PdfListPage({super.key, required this.categoryId, required this.examSectionId});
 
   @override
   Widget build(BuildContext context) {
-    controller.fetchPdfList(categoryId);
+    controller.fetchPdfList(categoryId, examSectionId);
 
     return Scaffold(
       backgroundColor: Get.theme.colorScheme.primary,
