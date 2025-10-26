@@ -35,7 +35,12 @@ class LeaderboardView extends StatelessWidget {
           color: Get.theme.colorScheme.onPrimary,
           onRefresh: () async => controller.fetchLeaderboard(),
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              padding: EdgeInsets.only(
+    left: 12.w,
+    right: 12.w,
+    top: 8.h,
+    bottom: 100.h, // ✅ 40px space after last item
+  ),
             itemCount: controller.leaderboard.length,
             itemBuilder: (context, index) {
               final user = controller.leaderboard[index];

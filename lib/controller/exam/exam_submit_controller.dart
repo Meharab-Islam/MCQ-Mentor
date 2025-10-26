@@ -94,8 +94,10 @@ class ExamSubmitController extends GetxController {
         // ✅ Show success message
         Get.snackbar(
           "✅ Exam Submitted",
-          resultModel.message, // safely access inner message
+          // resultModel.message, // safely access inner message
+          "FFFFFFFF, your exam has been submitted successfully!",
           snackPosition: SnackPosition.BOTTOM,
+
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );

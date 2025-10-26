@@ -335,6 +335,7 @@ class ProfileScreen extends StatelessWidget {
                           }).toList(),
                         ),
           
+          Gap(70.h),
                       // SizedBox(height: 24.h),
           
                       // /// ===== EXAM HISTORY =====

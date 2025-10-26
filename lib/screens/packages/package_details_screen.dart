@@ -6,6 +6,8 @@ import 'package:flutter_sslcommerz/model/SSLCCustomerInfoInitializer.dart';
 import 'package:flutter_sslcommerz/model/SSLCSdkType.dart';
 import 'package:flutter_sslcommerz/model/SSLCommerzInitialization.dart';
 import 'package:flutter_sslcommerz/model/SSLCurrencyType.dart';
+import 'package:flutter_sslcommerz/model/sslproductinitilizer/General.dart';
+import 'package:flutter_sslcommerz/model/sslproductinitilizer/SSLCProductInitializer.dart';
 import 'package:flutter_sslcommerz/sslcommerz.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,14 +25,10 @@ class PackageDetailScreen extends StatelessWidget {
     final controller = Get.put(PackageDetailController());
     controller.fetchPackageDetail(packageId);
 
-
-
     ScreenUtil.init(context, designSize: const Size(375, 812));
 
     return Scaffold(
-      appBar: CustomAppbar(
-        title: "Details",
-      ),
+      appBar: CustomAppbar(title: "Details"),
       body: Obx(() {
         if (controller.isLoading.value) {
           return Center(
@@ -92,7 +90,9 @@ class PackageDetailScreen extends StatelessWidget {
                         Text(
                           "⏱ ${package.duration} Days",
                           style: TextStyle(
-                              fontSize: 16.sp, color: Colors.grey[800]),
+                            fontSize: 16.sp,
+                            color: Colors.grey[800],
+                          ),
                         ),
                       ],
                     ),
@@ -118,8 +118,10 @@ class PackageDetailScreen extends StatelessWidget {
                       ),
                       elevation: 2,
                       child: ListTile(
-                        leading: const Icon(Icons.check_circle,
-                            color: Colors.green),
+                        leading: const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                        ),
                         title: Text(
                           feature.name,
                           style: TextStyle(
@@ -153,7 +155,7 @@ class PackageDetailScreen extends StatelessWidget {
                   onPressed: () {
                     // TODO: Add payment or purchase logic here
                     double price = double.parse(package.price);
-                   sslcommerz(totalPrice: price);
+                    sslcommerzPay(totalPrice: price);
                   },
                   child: Text(
                     "Purchase Now for ৳${package.price}",
@@ -172,108 +174,121 @@ class PackageDetailScreen extends StatelessWidget {
     );
   }
 
+  String generateTransactionId() {
+    const length = 15; // total length (including TXN)
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
 
+    // We already used 3 characters for 'TXN', so generate 12 random characters
+    String randomPart = List.generate(length - 3, (index) {
+      return chars[random.nextInt(chars.length)];
+    }).join();
+    return 'TXN$randomPart';
+  }
 
-String generateTransactionId() {
-  const length = 15; // total length (including TXN)
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  final random = Random();
+  ProfileController profileController = Get.find<ProfileController>();
 
-  // We already used 3 characters for 'TXN', so generate 12 random characters
-  String randomPart = List.generate(length - 3, (index) {
-    return chars[random.nextInt(chars.length)];
-  }).join();
-  return 'TXN$randomPart';
-}
-
-ProfileController profileController = Get.find<ProfileController>();
-
-void sslcommerz({required double totalPrice}) async {
-
-  final sslcommerz = Sslcommerz(
-    initializer: SSLCommerzInitialization(
-      sdkType: SSLCSdkType.TESTBOX, // Change to LIVE in production
-      store_id: "chudi68e82ba950be3",
-      store_passwd: "chudi68e82ba950be3@ssl",
-      total_amount: totalPrice,
-      tran_id: generateTransactionId(), // ✅ Always unique TXN id
-      currency: SSLCurrencyType.BDT,
-      product_category: "Digital Product",
-      multi_card_name: "bkash,rocket,nagad",
-      // ipn_url: "http://api.mcqmentor.com/mcq_web_app/public/api/webhook-app",
-    ),
-  );
-
-  sslcommerz.addCustomerInfoInitializer(
-    customerInfoInitializer: SSLCCustomerInfoInitializer(
-      customerName: profileController.studentProfile.value?.name ?? "Guest User",
-      customerEmail: profileController.studentProfile.value?.email ?? "no-email@mcqmentor.com",
-      customerPhone: profileController.studentProfile.value?.phone ?? "0000000000",
-      customerAddress1: "Faridpur",
-      customerCity: "Faridpur Sadar",
-      customerState: "Faridpur",
-      customerPostCode: "7800",
-      customerCountry: "Bangladesh",
-    ),
-  );
-
-  sslcommerz.addAdditionalInitializer(
-    sslcAdditionalInitializer: SSLCAdditionalInitializer(
-      valueA: packageId.toString(), // ✅ Your package info
-      valueB: profileController.studentProfile.value?.id.toString(), // ✅ User ID
-      // valueC, valueD optional — only if you need
-    ),
-  );
-
-  final response = await sslcommerz.payNow();
-
-
-  try {
-  if (response.status == 'VALID') {
-    var dioResponse = await Dio().post(
-      'https://api.mcqmentor.com/mcq_web_app/public/api/webhook-app',
-      options: Options(
-        headers: {
-          'Accept': 'application/json',
-        },
-        contentType: Headers.formUrlEncodedContentType, // ✅ IMPORTANT
+  void sslcommerzPay({required double totalPrice}) async {
+    // 1️⃣ Initialize SSLCommerz
+    final sslcommerz = Sslcommerz(
+      initializer: SSLCommerzInitialization(
+        sdkType: SSLCSdkType.LIVE, // LIVE MODE
+        store_id: "mcqmentor0live",
+        store_passwd: "68D386C172F1D69561@ssl",
+        // store_id: "chudi68e82ba950be3",
+        // store_passwd: "chudi68e82ba950be3@ssl",
+        total_amount: totalPrice,
+        tran_id: generateTransactionId(), // Must be unique
+        currency: SSLCurrencyType.BDT,
+        product_category: "Digital Product",
+        multi_card_name: "bkash,rocket,nagad",
       ),
-      data: {
-        'package_id': response.valueA,  // ✅ ensure value exists
-        'user_id': response.valueB,  // ✅ temporary static
-        'tran_id': response.tranId,
-        'amount': response.amount,
-        'currency': response.currencyType
-            .toString()
-            .split('.')
-            .last, // ✅ safe enum format
-        'status': response.status,
-        'paid_by': response.cardIssuer,
-        'payment_date': response.tranDate,
-      },
     );
 
-    if (dioResponse.statusCode == 200) {
-      Get.snackbar('Success', 'Payment recorded successfully!');
-      print("✅ Server Response: ${dioResponse.data}");
-    } else {
-      Get.snackbar('Error', 'Server returned unexpected response.');
-      print("⚠️ Server Response: ${dioResponse.data}");
+    // 2️⃣ Add Customer Info
+    sslcommerz.addCustomerInfoInitializer(
+      customerInfoInitializer: SSLCCustomerInfoInitializer(
+        customerName:
+            profileController.studentProfile.value?.name ?? "Guest User",
+        customerEmail:
+            profileController.studentProfile.value?.email ??
+            "no-email@mcqmentor.com",
+        customerPhone:
+            profileController.studentProfile.value?.phone ?? "0000000000",
+        customerAddress1: "Faridpur",
+        customerCity: "Faridpur Sadar",
+        customerState: "Faridpur",
+        customerPostCode: "7800",
+        customerCountry: "Bangladesh",
+      ),
+    );
+
+    // 3️⃣ Add Additional Initializer
+    sslcommerz.addAdditionalInitializer(
+      sslcAdditionalInitializer: SSLCAdditionalInitializer(
+        valueA: packageId.toString(), // ✅ must exist
+        valueB:
+            profileController.studentProfile.value?.id.toString() ??
+            "0", // ✅ fallback
+        valueC: "mcqmentor_app", // ✅ cannot be empty
+        valueD: DateTime.now().millisecondsSinceEpoch
+            .toString(), // ✅ cannot be empty
+      ),
+    );
+
+    // 4️⃣ Add Product Info (MANDATORY for LIVE)
+    sslcommerz.addProductInitializer(
+      sslcProductInitializer: SSLCProductInitializer(
+        productName: "MCQ Mentor Subscription",
+        productCategory: "Digital Product",
+        general: General(productProfile: "general", general: 'product_profile'),
+      ),
+    );
+
+    try {
+      // 5️⃣ Trigger Payment
+      final response = await sslcommerz.payNow();
+
+      // 6️⃣ Handle Response
+      if (response.status == 'VALID') {
+        // ✅ Send to backend for confirmation
+        var dioResponse = await Dio().post(
+          'https://api.mcqmentor.com/mcq_web_app/public/api/webhook-app',
+          options: Options(
+            headers: {'Accept': 'application/json'},
+            contentType: Headers.formUrlEncodedContentType,
+          ),
+          data: {
+            'package_id': response.valueA,
+            'user_id': response.valueB,
+            'tran_id': response.tranId,
+            'amount': response.amount,
+            'currency': response.currencyType.toString().split('.').last,
+            'status': response.status,
+            'paid_by': response.cardIssuer,
+            'payment_date': response.tranDate,
+          },
+        );
+
+        if (dioResponse.statusCode == 200) {
+          Get.snackbar('Success', 'Payment recorded successfully!');
+          print("✅ Server Response: ${dioResponse.data}");
+        } else {
+          Get.snackbar('Error', 'Server returned unexpected response.');
+          print("⚠️ Server Response: ${dioResponse.data}");
+        }
+      } else if (response.status == 'FAILED') {
+        Get.snackbar('Failed', 'Payment failed!');
+        print('❌ Payment failed');
+      } else if (response.status == 'CLOSED') {
+        Get.snackbar('Closed', 'Payment was cancelled.');
+        print('⚠️ Payment closed/cancelled by user');
+      }
+    } catch (e, stackTrace) {
+      print("🔥 SSLCommerz Error: $e");
+      print(stackTrace);
+      Get.snackbar('Error', 'Something went wrong. Please try again.');
     }
-  } else if (response.status == 'FAILED') {
-    print('❌ Payment failed');
-    Get.snackbar('Failed', 'Payment failed!');
-  } else if (response.status == 'CLOSED') {
-    print('⚠️ Payment closed/cancelled by user');
-    Get.snackbar('Closed', 'Payment was cancelled.');
   }
-} catch (e, stackTrace) {
-  print("🔥 ERROR: $e");
-  print(stackTrace); // ✅ helps in debugging
-  Get.snackbar('Error', 'Something went wrong. Please try again.');
-}
-
-
-}
-
 }

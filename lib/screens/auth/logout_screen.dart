@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mcq_mentor/main.dart';
 import 'login_screen.dart';
 
 class LogoutScreen extends StatelessWidget {
@@ -13,7 +14,7 @@ class LogoutScreen extends StatelessWidget {
     await box.remove('access_token');
 
     // Navigate back to login screen and remove all previous routes
-    Get.offAll(() => const LoginScreen());
+    Get.offAll(() => const AuthCheckScreen());
   }
 
   void _showLogoutDialog(BuildContext context) {

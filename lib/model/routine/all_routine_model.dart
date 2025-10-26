@@ -81,6 +81,7 @@ class AllRoutine {
   final String totalMarks;
   final String duration;
   final String description;
+  final String? file;
   final String date;
   final String status;
 
@@ -93,6 +94,7 @@ class AllRoutine {
     required this.totalMarks,
     required this.duration,
     required this.description,
+    required this.file,
     required this.date,
     required this.status,
   });
@@ -107,6 +109,7 @@ class AllRoutine {
       totalMarks: json['total_marks']?.toString() ?? "0",
       duration: json['duration']?.toString() ?? "0",
       description: json['description'] ?? "",
+      file: json['file'] ?? "",
       date: json['date'] ?? "",
       status: json['status'] ?? "",
     );
@@ -122,6 +125,7 @@ class AllRoutine {
       'total_marks': totalMarks,
       'duration': duration,
       'description': description,
+      'file': file,
       'date': date,
       'status': status,
     };

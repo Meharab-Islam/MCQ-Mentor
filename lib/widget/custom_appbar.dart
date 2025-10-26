@@ -12,7 +12,9 @@ import 'package:mcq_mentor/screens/notification/notification_screen.dart';
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showNotificationIcon;
-  const CustomAppbar({super.key, this.title = "MCQ Mentor", this.showNotificationIcon = true});
+  final bool showBackButton;
+  final VoidCallback? backButtonAction;
+  const CustomAppbar({super.key, this.title = "MCQ Mentor", this.showNotificationIcon = true, this.backButtonAction, this.showBackButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,12 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       centerTitle: false,
+      leading: showBackButton? IconButton(
+        icon: Icon(Icons.arrow_back, size: 24.sp,),
+        onPressed: backButtonAction ?? () {
+          Get.back();
+        },
+      ):null,
       title: Row(
         children: [
           Image.asset(AppImages.hat, width: 40, height: 30),

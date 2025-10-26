@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:mcq_mentor/constant/colors.dart';
 import 'package:mcq_mentor/controller/exam_scction/exam_section_controller.dart';
 import 'package:mcq_mentor/controller/exam_scction/single_exam_section_controller.dart';
 import 'package:mcq_mentor/screens/home/category_section/category_section_list_screen.dart';
 import 'package:mcq_mentor/screens/home/weekly_model_test/weekly_model_test_screen.dart';
+import 'package:mcq_mentor/widget/custom_appbar.dart';
 
-class AllAssessmentScreen extends StatelessWidget {
+class AllAssessmentScreen extends StatefulWidget {
   const AllAssessmentScreen({super.key});
 
+  @override
+  State<AllAssessmentScreen> createState() => _AllAssessmentScreenState();
+}
+
+class _AllAssessmentScreenState extends State<AllAssessmentScreen> {
+  final ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AssessmentController());
@@ -20,11 +26,8 @@ class AllAssessmentScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("All Assessment Sections"),
-        centerTitle: true,
-        backgroundColor: AppColorsDark.primary,
-        foregroundColor: AppColorsDark.onPrimary,
+      appBar: CustomAppbar(
+        title:"All Assessment Sections", 
       ),
       body: Obx(() {
         if (controller.examSections.isEmpty && controller.isLoading.value) {
@@ -32,7 +35,7 @@ class AllAssessmentScreen extends StatelessWidget {
         }
 
         return GridView.builder(
-          controller: controller.scrollController,
+          controller: scrollController,
           padding: const EdgeInsets.all(12),
           itemCount:
               controller.examSections.length +

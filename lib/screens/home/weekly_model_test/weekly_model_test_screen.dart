@@ -81,13 +81,8 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
            
 
               /// 📚 Live Exams List
-           Obx(() {
-  final liveExamModel = liveExamController.liveExams.isNotEmpty
-      ? liveExamController.liveExams.first
-      : null;
-
-  final hasExamData = liveExamModel?.data.isNotEmpty ?? false;
-
+/// 📚 Live Exams List   ✅ FIXED
+Obx(() {
   if (liveExamController.isLoading.value) {
     return Center(
       child: CircularProgressIndicator(
@@ -99,7 +94,6 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      // Always show message if available
       if (liveExamController.message.isNotEmpty)
         Container(
           width: double.infinity,
@@ -111,31 +105,29 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
           child: Text(
             liveExamController.message.value,
             style: TextStyle(fontSize: 14.sp),
-          textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
           ),
         ),
 
       Gap(15.h),
 
-      // Show list only if exam data is available
-      if (hasExamData)
-        Expanded(
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: liveExamModel!.data.length,
-            separatorBuilder: (_, __) => Gap(10.h),
-            itemBuilder: (context, index) {
-              final exam = liveExamModel.data[index];
-              return _examCard(context, exam);
-            },
-          ),
-        ),
-
-      // If no data, just don't show anything here (no "No exams found" message)
+      if (liveExamController.exams.isNotEmpty)
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: liveExamController.exams.length,
+          separatorBuilder: (_, __) => Gap(10.h),
+          itemBuilder: (context, index) {
+            final exam = liveExamController.exams[index];
+            return _examCard(context, exam);
+          },
+        )
+      else
+        SizedBox()
     ],
   );
 }),
+
 
 
               Gap(15.h),
@@ -150,6 +142,7 @@ class _WeeklyModelTestScreenState extends State<WeeklyModelTestScreen> {
                     icon: Icons.rule_outlined,
                     title: 'Routine',
                     onTap: () {
+                      print("salfalskjfalksjflk${widget.examSectionId}---${widget.examCategoryId}");
                       Get.to(() => AllRoutineScreen(
                             examSectionId: widget.examSectionId,
                             examCategoryId: widget.examCategoryId,
