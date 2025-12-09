@@ -119,11 +119,11 @@ class LeaderboardCard extends StatelessWidget {
                           child: Image.network(
                             (user.image != null && user.image!.isNotEmpty)
                                 ? user.image!
-                                : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                                : 'https://mcqmentor.com/logo.png',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.network(
-                                'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                                'https://mcqmentor.com/logo.png',
                                 fit: BoxFit.cover,
                               );
                             },

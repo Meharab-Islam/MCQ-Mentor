@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:692082661577:android:3d61943c752e8d1900d518",
         "android_client_info": {
-          "package_name": "com.example.mcq_mentor"
+          "package_name": "com.mcqmentor.app"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "692082661577-apu2rkeo2ihc2hiqcv3vs15q4nkudf89.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.mcq_mentor",
+            "package_name": "com.mcqmentor.app",
             "certificate_hash": "aa0c2fa63809118a39372b6af72380feda94b019"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "692082661577-ao0dce6s393uoruglh2li7loi5la2cii.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.mcqMentor"
+                "bundle_id": "com.mcqmentor.app"
               }
             }
           ]

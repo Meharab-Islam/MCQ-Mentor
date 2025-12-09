@@ -72,7 +72,8 @@ class _ArchiveGiveExamQuestionListState
               children: [
                 Expanded(
                   child: Obx(() {
-                    if (sectionController.isLoading.value) {
+                    if (sectionController.isLoading.value &&
+                        questionController.isLoading.value) {
                       return Center(
                         child: CircularProgressIndicator(
                           color: Get.theme.colorScheme.onPrimary,
@@ -148,7 +149,8 @@ class _ArchiveGiveExamQuestionListState
                 // Timer
                 Obx(() {
                   return Container(
-                    padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
                     decoration: BoxDecoration(
                       color: submitController.remainingSeconds <= 60
                           ? Colors.redAccent
@@ -175,14 +177,74 @@ class _ArchiveGiveExamQuestionListState
             ),
           ),
 
+          // 🔹 Question progress summary
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Obx(() {
+              final totalQuestions = questionController.questions.length;
+              final answeredCount = _selectedOptions.length;
+
+              double progress = totalQuestions == 0
+                  ? 0
+                  : answeredCount / totalQuestions;
+
+              Color progressColor;
+              if (progress < 0.33) {
+                progressColor = Colors.redAccent;
+              } else if (progress < 0.66) {
+                progressColor = Colors.orangeAccent;
+              } else {
+                progressColor = Colors.green;
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Answered: $answeredCount / $totalQuestions",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Get.theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                      Text(
+                        "${(progress * 100).toStringAsFixed(0)}%",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: progressColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6.h),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey.shade300,
+                      color: progressColor,
+                      minHeight: 8.h,
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+
           // 🔹 Questions List
           Expanded(
             child: Obx(() {
               if (questionController.isLoading.value) {
                 return Center(
-                    child: CircularProgressIndicator(
-                  color: Get.theme.colorScheme.onPrimary,
-                ));
+                  child: CircularProgressIndicator(
+                    color: Get.theme.colorScheme.onPrimary,
+                  ),
+                );
               }
 
               final questions = questionController.questions;
@@ -190,7 +252,8 @@ class _ArchiveGiveExamQuestionListState
                 return const Center(
                   child: Text(
                     "No questions available 😔",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 );
               }
@@ -199,74 +262,199 @@ class _ArchiveGiveExamQuestionListState
                 padding: EdgeInsets.all(16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: questions.map((question) {
+                  children: questions.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final question = entry.value;
                     final selected = _selectedOptions[question.id];
-                    final isExamFinished = submitController.isExamFinished.value;
+                    final isExamFinished =
+                        submitController.isExamFinished.value;
 
-                    return Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r)),
-                      margin: EdgeInsets.only(bottom: 12.h),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Html(data: question.question),
-                            SizedBox(height: 8.h),
-                            ...question.options.map((option) {
-                              final isSelected = selected == option;
-                              return GestureDetector(
-                                onTap: isExamFinished
-                                    ? null
-                                    : () {
-                                        setState(() {
-                                          _selectedOptions[question.id] = option;
-                                          submitController.selectedAnswers[question.id] = option;
-                                        });
-                                      },
-                                child: Opacity(
-                                  opacity: isExamFinished ? 0.6 : 1,
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(vertical: 4.h),
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10.h, horizontal: 12.w),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? Get.theme.colorScheme.onPrimary.withAlpha(70)
-                                          : Colors.white,
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? Get.theme.colorScheme.onPrimary
-                                            : Colors.grey.shade300,
+                    final bool isQuestionLocked =
+                        _selectedOptions.containsKey(question.id);
+
+                    Color cardBackgroundColor;
+                    if (isExamFinished) {
+                      cardBackgroundColor = Colors.white;
+                    } else if (isQuestionLocked) {
+                      cardBackgroundColor =
+                          const Color.fromARGB(255, 209, 214, 240);
+                    } else {
+                      cardBackgroundColor = Colors.white;
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Card(
+                            elevation: 2,
+                            color: cardBackgroundColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            margin: EdgeInsets.only(bottom: 12.h),
+                            child: Padding(
+                              padding: EdgeInsets.all(12.w),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 🧾 Question number and text
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${index + 1}. ",
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      borderRadius: BorderRadius.circular(10.r),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          isSelected
-                                              ? Icons.radio_button_checked
-                                              : Icons.radio_button_off,
-                                          color: isSelected
-                                              ? Get.theme.colorScheme.onPrimary
-                                              : Colors.grey,
+                                      Expanded(
+                                        child: Html(
+                                          data: question.question,
+                                          style: {
+                                            "body": Style(
+                                              margin: Margins.symmetric(
+                                                  horizontal: 0.w, vertical: 0),
+                                              padding: HtmlPaddings.all(0),
+                                              fontSize: FontSize(14.sp),
+                                            ),
+                                          },
                                         ),
-                                        SizedBox(width: 8.w),
-                                        Expanded(
-                                          child: Text(option,
-                                              style: TextStyle(fontSize: 14.sp)),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                          ],
+                                  SizedBox(height: 8.h),
+
+                                  // 🧩 Options
+                                  ...question.options.asMap().entries
+                                      .map((optEntry) {
+                                    final optIndex = optEntry.key;
+                                    final option = optEntry.value;
+                                    final isSelected =
+                                        selected == option;
+
+                                    // 🅰 Determine option label based on template
+                                    final englishLabels = [
+                                      'A',
+                                      'B',
+                                      'C',
+                                      'D',
+                                      'E',
+                                      'F'
+                                    ];
+                                    final banglaLabels = [
+                                      'ক',
+                                      'খ',
+                                      'গ',
+                                      'ঘ',
+                                      'ঙ',
+                                      'চ'
+                                    ];
+                                    final optionLabel =
+                                        (question.template == 'bangla')
+                                            ? banglaLabels[optIndex]
+                                            : englishLabels[optIndex];
+
+                                    return GestureDetector(
+                                      onTap: isExamFinished ||
+                                              isQuestionLocked
+                                          ? null
+                                          : () {
+                                              setState(() {
+                                                _selectedOptions[
+                                                    question.id] = option;
+                                                submitController
+                                                        .selectedAnswers[
+                                                    question.id] = option;
+                                              });
+                                            },
+                                      child: Opacity(
+                                        opacity: isExamFinished ||
+                                                isQuestionLocked
+                                            ? 0.8
+                                            : 1,
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 4.h),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10.h,
+                                              horizontal: 12.w),
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? Get.theme.colorScheme
+                                                    .onPrimary
+                                                    .withAlpha(60)
+                                                : Colors.white,
+                                            border: Border.all(
+                                              color: isSelected
+                                                  ? Get.theme.colorScheme
+                                                      .onPrimary
+                                                  : Colors
+                                                      .grey.shade300,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10.r),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                width: 28.w,
+                                                height: 28.w,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: isSelected
+                                                      ? Get.theme.colorScheme
+                                                          .onPrimary
+                                                      : Colors.white,
+                                                  border: Border.all(
+                                                    color: isSelected
+                                                        ? Get.theme
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Colors
+                                                            .grey.shade400,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    optionLabel,
+                                                    style: TextStyle(
+                                                      fontSize: 13.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : Colors
+                                                              .grey.shade700,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10.w),
+                                              Expanded(
+                                                child: Text(
+                                                  option,
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   }).toList(),
                 ),
@@ -278,13 +466,15 @@ class _ArchiveGiveExamQuestionListState
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10.h),
             child: Obx(() {
-              final isDisabled =
-                  submitController.isLoading.value || submitController.isExamFinished.value;
+              final isDisabled = submitController.isLoading.value ||
+                  submitController.isExamFinished.value;
 
               return ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDisabled ? Colors.grey : Get.theme.colorScheme.onPrimary,
-                  padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
+                  backgroundColor:
+                      isDisabled ? Colors.grey : Get.theme.colorScheme.onPrimary,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.r),
                   ),
@@ -305,7 +495,9 @@ class _ArchiveGiveExamQuestionListState
                       )
                     : const Icon(Icons.check_circle, color: Colors.white),
                 label: Text(
-                  submitController.isLoading.value ? "Submitting..." : "Submit Exam",
+                  submitController.isLoading.value
+                      ? "Submitting..."
+                      : "Submit Exam",
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,

@@ -82,9 +82,23 @@ class _QuestionBankQuestionListState extends State<QuestionBankQuestionList> {
                 );
               }
 
-              if (questionController.questions.isEmpty) {
-                return const Center(child: Text("No questions found 😔"));
-              }
+                            if (questionController.questions.isEmpty) {
+    return FutureBuilder(
+      // The future that will complete after 10 seconds
+      future: Future.delayed(const Duration(seconds: 10)),
+      builder: (context, snapshot) {
+        // Check the state of the Future:
+        if (snapshot.connectionState == ConnectionState.done) {
+          // 1. If 10 seconds have passed (ConnectionState.done), show the message
+          return const Center(child: Text("No questions found 😔"));
+        } else {
+          // 2. While waiting (ConnectionState.waiting), show the loader
+          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
+        }
+      },
+    );
+  }
+
 
               return ListView.builder(
                 controller: questionController.scrollController,

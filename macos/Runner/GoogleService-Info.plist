@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.mcqMentor</string>
+	<string>com.mcqmentor.app</string>
 	<key>PROJECT_ID</key>
 	<string>mcq-mentor-6f840</string>
 	<key>STORAGE_BUCKET</key>

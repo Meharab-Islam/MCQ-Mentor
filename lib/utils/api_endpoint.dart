@@ -30,6 +30,7 @@ class ApiEndpoint {
   static const String examDetails = '$baseUrl/Exam/';
   static const String examQuestions = '$baseUrl/Exam/all-questions/';
   static const String submitExam = '$baseUrl/submit-exam';
+  static const String submitQuestionBankExam = '$baseUrl/study-section/submit';
   static const String questionBankCategory = '$baseUrl/question-bank-category';
   static const String questionBankSubCategorye = '$baseUrl/question-bank-sub-category';
   static const String questionBank = '$baseUrl/question-bank';

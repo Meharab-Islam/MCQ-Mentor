@@ -55,7 +55,7 @@ class _ArchiveQuestionListViewState extends State<ArchiveQuestionListView> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Obx(() {
-              if (sectionController.isLoading.value) {
+              if (sectionController.isLoading.value && controller.isLoading.value) {
                 return Center(
                   child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary),
                 );

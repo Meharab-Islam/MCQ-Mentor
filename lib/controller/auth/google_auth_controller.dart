@@ -24,7 +24,8 @@ class GoogleAuthController extends GetxController {
   // Sign in with Google
   Future signInWithGoogle() async {
     try {
-      initSignIn();
+      await _googleSignIn.signOut(); // Force clear session
+      await initSignIn();
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
       final authorizationClient = googleUser.authorizationClient;
       GoogleSignInClientAuthorization? authorization = await authorizationClient
@@ -42,16 +43,16 @@ class GoogleAuthController extends GetxController {
           data,
         );
 
-       if (response.statusCode == 200) {
-        final token = response.data['access_token'];
+        if (response.statusCode == 200) {
+          final token = response.data['access_token'];
 
-        if (token != null) {
-          await box.write('access_token', token);
+          if (token != null) {
+            await box.write('access_token', token);
+          }
+
+          // Navigate to home
+          Get.offAll(() => CustomBottomNavBarScreen());
         }
-
-        // Navigate to home
-        Get.offAll(() => CustomBottomNavBarScreen());
-      }
         return false;
       } catch (e) {
         // ApiService will already show error messages

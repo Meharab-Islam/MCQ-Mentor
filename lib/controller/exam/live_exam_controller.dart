@@ -31,6 +31,8 @@ final isSuccess = false.obs;           // ✅ success flag from API
       if (examCategoryId != null) 'exam_category_id': examCategoryId,
     };
 
+    print('🔍 Fetching live exams with params: $queryParams');
+
     final response = await _apiService.get(
       ApiEndpoint.liveExams,
       queryParameters: queryParams,

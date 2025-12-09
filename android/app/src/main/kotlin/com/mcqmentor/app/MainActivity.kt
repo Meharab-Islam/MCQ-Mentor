@@ -1,4 +1,4 @@
-package com.example.mcq_mentor
+package com.mcqmentor.app
 
 import io.flutter.embedding.android.FlutterActivity
 

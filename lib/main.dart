@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,6 +18,7 @@ import 'package:mcq_mentor/constant/images.dart';
 import 'package:mcq_mentor/screens/auth/login_screen.dart';
 import 'package:mcq_mentor/screens/home/CustomBottomNavBar.dart';
 import 'package:mcq_mentor/constant/colors.dart';
+// import 'package:no_screenshot/no_screenshot.dart';
 
 /// -------- BACKGROUND FCM HANDLER --------
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -70,9 +73,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late final FirebaseMessaging _messaging;
+// final _noScreenshot = NoScreenshot.instance;
 
+// void disableScreenshot() async {
+//   bool result = await _noScreenshot.screenshotOff();
+//   debugPrint('Screenshot Off: $result');
+// }
   @override
   void initState() {
+    // disableScreenshot();
     super.initState();
 
     final login = Get.find<LoginController>();
@@ -85,21 +94,45 @@ class _MyAppState extends State<MyApp> {
       print("⛔ User not logged in → Skipping FCM Registration");
     }
   }
-
- Future<void> _setupFCM() async {
+Future<void> _setupFCM() async {
   _messaging = FirebaseMessaging.instance;
+
+  // 1. Request permission (iOS only)
   await _messaging.requestPermission(alert: true, badge: true, sound: true);
 
   final profileController = Get.find<ProfileController>();
 
-  /// Wait until profile is loaded
+  // 2. Wait until profile is loaded
   ever(profileController.studentProfile, (profile) async {
     final profileId = profile?.id;
     if (profileId == null) return;
 
     final uid = profileId.toString();
 
-    /// Get FCM token
+    // ✅ IMPORTANT: If iOS → ensure APNS is ready
+  if (Platform.isIOS) {
+  String? apns;
+  int retry = 0;
+
+  while (apns == null && retry < 5) {
+    apns = await _messaging.getAPNSToken();
+    if (apns == null) {
+      print("⚠️ Waiting for APNS token... attempt ${retry + 1}");
+      await Future.delayed(const Duration(milliseconds: 500)); // WAIT 0.5 sec
+      retry++;
+    }
+  }
+
+  if (apns == null) {
+    print("❌ APNS token still not available after retries");
+    return; // Stop and wait until APNS is ready
+  }
+
+  print("🍏 APNS token ready: $apns");
+}
+
+
+    // 3. Get FCM token now (safe)
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (fcmToken == null || fcmToken.isEmpty) {
       print("❌ Failed to get FCM token.");
@@ -107,17 +140,13 @@ class _MyAppState extends State<MyApp> {
     }
 
     print("🔥 FCM Token: $fcmToken");
-
-    /// Send token to Laravel backend
     await _saveFcmTokenToLaravel(uid, fcmToken);
 
-    /// Listen for token refresh
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       print("♻️ FCM token refreshed: $newToken");
       await _saveFcmTokenToLaravel(uid, newToken);
     });
 
-    /// Foreground notifications
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
         _showLocalNotification(

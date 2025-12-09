@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                                   (student.image != null &&
                                       student.image!.isNotEmpty)
                                   ? student.image!
-                                  : 'https://i.pinimg.com/564x/39/33/f6/3933f64de1724bb67264818810e3f2cb.jpg',
+                                  : 'https://mcqmentor.com/logo.png',
                               height: 150.h,
                               width: 120.w,
                               fit: BoxFit.cover,

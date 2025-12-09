@@ -45,7 +45,7 @@ class SingleExamSectionController extends GetxController {
 
         // Navigate based on response
         if (examSections.value?.category != true) {
-          print("afasfasfhsajkfasdkjfadklsjfdisjfklsjfklsdjfikdsjfdklsjfsdkljfklsd${examSections.value!.data.id.toString()}");
+          print("exam_section_id${examSections.value!.data.id.toString()}");
           Get.to(() => WeeklyModelTestScreen(
             pdf: examSections.value!.pdf,
              examSectionId: examSections.value!.data.id.toString(),

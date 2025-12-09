@@ -155,7 +155,7 @@ class PackageDetailScreen extends StatelessWidget {
                   onPressed: () {
                     // TODO: Add payment or purchase logic here
                     double price = double.parse(package.price);
-                    sslcommerzPay(totalPrice: price);
+                    checkFreePackage(price);
                   },
                   child: Text(
                     "Purchase Now for ৳${package.price}",
@@ -189,20 +189,61 @@ class PackageDetailScreen extends StatelessWidget {
 
   ProfileController profileController = Get.find<ProfileController>();
 
+
+  Future<void> checkFreePackage(double price) async{
+    print("💰 Price: $price for package ID: $packageId");
+    if(price == 0 || price == 0.0 || price == 0.00){ 
+
+    try {
+        // ✅ Send to backend for confirmation
+        var response = await Dio().post(
+          'https://api.mcqmentor.com/mcq_web_app/public/api/ssl/initiate-app',
+          options: Options(
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json',},
+          ),
+          data: {
+           'package_id': packageId.toString(),
+           'user_id': profileController.studentProfile.value?.id.toString() ?? "0",
+           'price': price.toString(),
+           
+          },
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          Get.snackbar('Success', 'Payment recorded successfully!');
+          print("✅ Server Response: ${response.data}");
+        } else {
+          Get.snackbar('Error', 'Server returned unexpected response.');
+          print("⚠️ Server Response: ${response.data}");
+        }
+      
+    } catch (e) {
+      print("Error processing free package: $e");
+      Get.snackbar('Error', 'Something went wrong with free package processing.');
+    }
+    }
+    else{
+     sslcommerzPay(totalPrice: price);
+     
+    }
+  }
+
   void sslcommerzPay({required double totalPrice}) async {
+    print("💰 user Id ${profileController.studentProfile.value?.id.toString()}");
     // 1️⃣ Initialize SSLCommerz
     final sslcommerz = Sslcommerz(
       initializer: SSLCommerzInitialization(
         sdkType: SSLCSdkType.LIVE, // LIVE MODE
         store_id: "mcqmentor0live",
-        store_passwd: "68D386C172F1D69561@ssl",
+        store_passwd: "68D386C172F1D69561",
+        ipn_url: "https://api.mcqmentor.com/mcq_web_app/public/api/webhook",
         // store_id: "chudi68e82ba950be3",
         // store_passwd: "chudi68e82ba950be3@ssl",
         total_amount: totalPrice,
         tran_id: generateTransactionId(), // Must be unique
         currency: SSLCurrencyType.BDT,
         product_category: "Digital Product",
-        multi_card_name: "bkash,rocket,nagad",
+        // multi_card_name: "bkash,dbbl,nagad",
       ),
     );
 
@@ -249,7 +290,7 @@ class PackageDetailScreen extends StatelessWidget {
     try {
       // 5️⃣ Trigger Payment
       final response = await sslcommerz.payNow();
-
+print(response);
       // 6️⃣ Handle Response
       if (response.status == 'VALID') {
         // ✅ Send to backend for confirmation

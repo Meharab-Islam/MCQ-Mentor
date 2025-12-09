@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '692082661577',
     projectId: 'mcq-mentor-6f840',
     storageBucket: 'mcq-mentor-6f840.firebasestorage.app',
-    iosBundleId: 'com.example.mcqMentor',
+    iosBundleId: 'com.mcqmentor.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '692082661577',
     projectId: 'mcq-mentor-6f840',
     storageBucket: 'mcq-mentor-6f840.firebasestorage.app',
-    iosBundleId: 'com.example.mcqMentor',
+    iosBundleId: 'com.mcqmentor.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

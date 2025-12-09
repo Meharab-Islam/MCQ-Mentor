@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OptionTile extends StatelessWidget {
@@ -36,14 +37,19 @@ class OptionTile extends StatelessWidget {
             ),),
           ),
         ),
-        title: Text(
-          option,
-          style: TextStyle(
-            fontSize: 16,
-            color: isCorrect ? Colors.white : Colors.black87,
-            fontWeight:
-                isCorrect ? FontWeight.bold : FontWeight.normal,
-          ),
+        title: Html(
+          data: option,
+          style: {
+            "html": Style(
+              margin: Margins.zero,
+              padding: HtmlPaddings.zero,
+            ),
+            "body": Style(
+              fontSize: FontSize(16.sp),
+              color: isCorrect ? Colors.white : Colors.black87,
+              fontWeight: isCorrect ? FontWeight.bold : FontWeight.normal,
+            ),
+          },
         ),
         onTap: null,
       ),

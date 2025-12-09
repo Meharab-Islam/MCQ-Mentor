@@ -1,42 +1,65 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
+    id("com.google.gms.google-services") // Firebase
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id("dev.flutter.flutter-gradle-plugin")
+    id("dev.flutter.flutter-gradle-plugin") // must be last
 }
 
 android {
-    namespace = "com.example.mcq_mentor"
+    namespace = "com.mcqmentor.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true  // ✅ Kotlin DSL syntax
+        isCoreLibraryDesugaringEnabled = true
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
     }
 
     defaultConfig {
-        applicationId = "com.example.mcq_mentor"
+        applicationId = "com.mcqmentor.app"
         minSdk = flutter.minSdkVersion
-        multiDexEnabled = true
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true // ✅ required!
+    }
+
+    // ✅ Signing setup (release, not debug)
+    val keystoreProperties = Properties()
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = keystoreProperties["storeFile"]?.let { rootProject.file(it) }
+            storePassword = keystoreProperties["storePassword"] as String
+        }
     }
 
     buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
+
 }
 
 flutter {
@@ -44,6 +67,8 @@ flutter {
 }
 
 dependencies {
-    // ✅ Updated core library desugaring for flutter_local_notifications
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // ✅ Required when using multiDex
+    implementation("androidx.multidex:multidex:2.0.1")
 }

@@ -42,7 +42,7 @@ class SingleCategoryDetailsController extends GetxController {
         if (Get.isDialogOpen ?? false) {
           Get.back();
         }
- print("afasfasfhsajkfasdkjfadklsjfdisjfklsjfklsdjfikdsjfdklsjfsdkljfklsd${examSections.value!.data.id.toString()}");
+ print("exam_section_Id${examSections.value!.data.id.toString()}");
         // Navigate to next screen
         Get.to(() => WeeklyModelTestScreen(
               pdf: examSections.value!.pdf,

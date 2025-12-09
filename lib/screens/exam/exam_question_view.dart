@@ -27,16 +27,11 @@ class ExamQuestionView extends StatefulWidget {
 class _ExamQuestionViewState extends State<ExamQuestionView> {
   late ExamQuestionController questionController;
   late ExamSubmitController submitController;
-  final SubjectListController sectionController = Get.put(
-    SubjectListController(),
-  );
+  final SubjectListController sectionController = Get.put(SubjectListController());
 
   @override
   void initState() {
     super.initState();
-
-    // Controllers
-
     questionController = Get.put(ExamQuestionController());
     submitController = Get.put(
       ExamSubmitController(
@@ -45,10 +40,7 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
       ),
     );
 
-    // Fetch questions
     questionController.fetchExamQuestions(widget.examId);
-
-    // Start exam timer
     submitController.startExam();
   }
 
@@ -68,7 +60,9 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
       appBar: const CustomAppbar(title: "Exam Questions"),
       body: Obx(() {
         if (questionController.isLoading.value) {
-          return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary));
+          return Center(
+            child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary),
+          );
         }
 
         final examData = questionController.examData.value;
@@ -76,9 +70,26 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
           return const Center(child: Text("No data available"));
         }
 
+        final questions = questionController.filteredQuestions;
+
+        // ✅ Count answered questions
+        final answeredCount = submitController.selectedAnswers.length;
+        final totalQuestions = questions.length;
+        final progress = totalQuestions == 0 ? 0.0 : answeredCount / totalQuestions;
+
+        // Dynamic progress color
+        Color progressColor;
+        if (progress < 0.33) {
+          progressColor = Colors.redAccent;
+        } else if (progress < 0.66) {
+          progressColor = Colors.orangeAccent;
+        } else {
+          progressColor = Colors.green;
+        }
+
         return Column(
           children: [
-            // 🔹 Timer section
+            // 🔹 Dropdown + Timer
             Container(
               width: double.infinity,
               color: Get.theme.colorScheme.onPrimary.withAlpha(70),
@@ -96,14 +107,10 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                         );
                       }
 
-                      // Dropdown items
                       final dropdownItems = <DropdownMenuItem<String>>[
                         const DropdownMenuItem(
-                          value: '', // Show all subjects
-                          child: Text(
-                            "All",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
+                          value: '',
+                          child: Text("All", style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                         ...sectionController.sections.map((section) {
                           return DropdownMenuItem<String>(
@@ -113,15 +120,11 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                         }),
                       ];
 
-                      // Current selected value
-                      String selectedValue =
-                          sectionController.selectedSectionId.value == 0
+                      String selectedValue = sectionController.selectedSectionId.value == 0
                           ? ''
-                          : sectionController.selectedSectionId.value
-                                .toString();
+                          : sectionController.selectedSectionId.value.toString();
 
                       return Container(
-                        width: double.infinity, // Ensure it has a bounded width
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(14),
@@ -139,50 +142,26 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                           isExpanded: true,
                           items: dropdownItems,
                           dropdownColor: Colors.white,
-                          icon: const Icon(
-                            Icons.arrow_drop_down_rounded,
-                            size: 26,
-                            color: Colors.grey,
-                          ),
+                          icon: const Icon(Icons.arrow_drop_down_rounded, size: 26, color: Colors.grey),
                           decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.list_alt_rounded,
-                              color: Get.theme.colorScheme.onPrimary,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
-                            ),
+                            prefixIcon: Icon(Icons.list_alt_rounded, color: Get.theme.colorScheme.onPrimary),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             filled: true,
                             fillColor: Colors.white,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: const TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.w500),
                           onChanged: (value) {
-                            // Update selected section
                             if (value != null) {
-                              int sectionId = value == ''
-                                  ? 0
-                                  : int.parse(value);
-                              // sectionController.selectSection(sectionId);
-
-                              // Filter questions in ExamQuestionController
-                              questionController.filterQuestionsBySubject(
-                                sectionId,
-                              );
+                              int sectionId = value == '' ? 0 : int.parse(value);
+                              questionController.filterQuestionsBySubject(sectionId);
                             }
                           },
                         ),
@@ -190,13 +169,10 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                     }),
                   ),
                   Gap(10.w),
-                  // Timer widget remains unchanged
+                  // Timer
                   Obx(() {
                     return Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6.h,
-                        horizontal: 12.w,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
                       decoration: BoxDecoration(
                         color: submitController.remainingSeconds <= 60
                             ? Colors.redAccent
@@ -205,11 +181,7 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.timer,
-                            color: Colors.white,
-                            size: 18,
-                          ),
+                          const Icon(Icons.timer, color: Colors.white, size: 18),
                           SizedBox(width: 6.w),
                           Text(
                             submitController.formattedTime.value,
@@ -227,24 +199,53 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
               ),
             ),
 
+            // 🔹 Progress section (Answered count + progress bar)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Answered: $answeredCount / $totalQuestions",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Get.theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                      Text(
+                        "${(progress * 100).toStringAsFixed(0)}%",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: progressColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6.h),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey.shade300,
+                      color: progressColor,
+                      minHeight: 8.h,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // 🔹 Question List
             Expanded(
               child: Obx(() {
-                final questions = questionController.filteredQuestions;
-
-                if (questionController.isLoading.value) {
-                  return  Center(child: CircularProgressIndicator(color: Get.theme.colorScheme.onPrimary,));
-                }
-
                 if (questions.isEmpty) {
                   return const Center(
-                    child: Text(
-                      "No questions available",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    child: Text("No questions available", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   );
                 }
 
@@ -253,9 +254,7 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ...questions
-                          .map((question) => _questionCard(question))
-                          .toList(),
+                      ...questions.map((question) => _questionCard(question)).toList(),
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -268,48 +267,34 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
               padding: EdgeInsets.symmetric(vertical: 10.h),
               child: Obx(() {
                 final isDisabled =
-                    submitController.isLoading.value ||
-                    submitController.isExamFinished.value;
+                    submitController.isLoading.value || submitController.isExamFinished.value;
 
                 return ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDisabled
-                        ? Colors.grey
-                        : Get.theme.colorScheme.onPrimary,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40.w,
-                      vertical: 14.h,
-                    ),
+                    backgroundColor:
+                        isDisabled ? Colors.grey : Get.theme.colorScheme.onPrimary,
+                    padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.r),
                     ),
                   ),
-                  onPressed: isDisabled
-                      ? null
-                      : () {
-                          print(
-                            "Selected Answers: ${submitController.selectedAnswers}",
-                          );
-                          submitController.submitExam();
-                        },
+                  onPressed: isDisabled ? null : () => submitController.submitExam(),
                   icon: submitController.isLoading.value
-                      ?  SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                           color: Get.theme.colorScheme.onPrimary,
+                            color: Get.theme.colorScheme.onPrimary,
                             strokeWidth: 2,
                           ),
                         )
                       : const Icon(Icons.check_circle, color: Colors.white),
                   label: Text(
-                    submitController.isLoading.value
-                        ? "Submitting..."
-                        : "Submit Exam",
+                    submitController.isLoading.value ? "Submitting..." : "Submit Exam",
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: submitController.isLoading.value? Get.theme.colorScheme.onPrimary:Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                 );
@@ -324,94 +309,56 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
   Widget _questionCard(Question question) {
     return Obx(() {
       final selected = question.selectedOption.value;
-      final isExamFinished =
-          submitController.isExamFinished.value; // ✅ check state
+      final isExamFinished = submitController.isExamFinished.value;
 
       return Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
         margin: EdgeInsets.only(bottom: 12.h),
         child: Padding(
           padding: EdgeInsets.all(12.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             Builder(
-              builder: (_) {
-                final text = question.question ?? "No question text";
-                final bool isHtml = text.contains(
-                  RegExp(r"<[^>]+>"),
-                ); // detect HTML tags
-      
-                if (isHtml) {
-                  // 🧩 Render HTML content
-                  return Html(
-                    data: text,
-                    style: {
-                      "html": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "body": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "p": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                        fontSize: FontSize(20.sp),
-                        color: Get.isDarkMode
-                            ? Colors.white
-                            : Colors.black87,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      "div": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "span": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                    },
-                  );
-                } else {
-                  // 📝 Render plain text
-                  return Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      color: Get.isDarkMode ? Colors.white : Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-              },
-            ),
+              // 🧾 Question text (HTML or plain)
+              Html(
+                data: question.question ?? "No question text",
+                style: {
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    fontSize: FontSize(18.sp),
+                    fontWeight: FontWeight.w600,
+                    color: Get.isDarkMode ? Colors.white : Colors.black87,
+                  ),
+                },
+              ),
               SizedBox(height: 8.h),
 
-              // ✅ Disable options if exam finished
-              ...question.options.map((option) {
+              // 🧩 Options
+              ...question.options.asMap().entries.map((entry) {
+                final optionIndex = entry.key;
+                final option = entry.value;
                 final isSelected = selected == option;
+
+                // Label A/B/C/D or ক/খ/গ/ঘ
+                final englishLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                final banglaLabels = ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 'চ'];
+                final optionLabel =
+                    (question.template == 'bangla') ? banglaLabels[optionIndex] : englishLabels[optionIndex];
+
                 return GestureDetector(
                   onTap: isExamFinished
-                      ? null // 🚫 disable tap
+                      ? null
                       : () {
                           question.selectedOption.value = option;
-                          submitController.selectedAnswers[question.id] =
-                              option;
-                          debugPrint("Selected: ${question.id} -> $option");
+                          submitController.selectedAnswers[question.id] = option;
                         },
                   child: Opacity(
-                    opacity: isExamFinished ? 0.6 : 1, // make look disabled
+                    opacity: isExamFinished ? 0.6 : 1,
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 4.h),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 10.h,
-                        horizontal: 12.w,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? Get.theme.colorScheme.onPrimary.withAlpha(70)
@@ -424,76 +371,54 @@ class _ExamQuestionViewState extends State<ExamQuestionView> {
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(
-                            isSelected
-                                ? Icons.radio_button_checked
-                                : Icons.radio_button_off,
-                            color: isSelected
-                                ? Get.theme.colorScheme.onPrimary
-                                : Colors.grey,
+                          Container(
+                            width: 28.w,
+                            height: 28.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isSelected
+                                  ? Get.theme.colorScheme.onPrimary
+                                  : Colors.white,
+                              border: Border.all(
+                                color: isSelected
+                                    ? Get.theme.colorScheme.onPrimary
+                                    : Colors.grey.shade400,
+                                width: 2,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                optionLabel,
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.white : Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
                           ),
-                          SizedBox(width: 8.w),
+                          SizedBox(width: 10.w),
                           Expanded(
-                            child: Builder(
-              builder: (_) {
-                final text = option ?? "No question text";
-                final bool isHtml = text.contains(
-                  RegExp(r"<[^>]+>"),
-                ); // detect HTML tags
-      
-                if (isHtml) {
-                  // 🧩 Render HTML content
-                  return Html(
-                    data: text,
-                    style: {
-                      "html": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "body": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "p": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                        fontSize: FontSize(14.sp),
-                        color: Get.isDarkMode
-                            ? Colors.white
-                            : Colors.black87,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      "div": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                      "span": Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                      ),
-                    },
-                  );
-                } else {
-                  // 📝 Render plain text
-                  return Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Get.isDarkMode ? Colors.white : Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-              },
-            ),
+                            child: Html(
+                              data: option,
+                              style: {
+                                "body": Style(
+                                  margin: Margins.zero,
+                                  padding: HtmlPaddings.zero,
+                                  fontSize: FontSize(14.sp),
+                                  color: Get.isDarkMode ? Colors.white : Colors.black87,
+                                ),
+                              },
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

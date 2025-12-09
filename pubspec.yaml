@@ -76,6 +76,8 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   syncfusion_flutter_pdfviewer: ^31.2.3
   onesignal_flutter: ^5.3.4
+  # no_screenshot: ^0.3.1
+
 
 
 dev_dependencies:

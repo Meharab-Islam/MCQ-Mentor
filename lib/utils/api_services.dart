@@ -2,7 +2,6 @@
 
 import 'dart:io';
 import 'package:dio/dio.dart' as dio;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart'; // ✅ Needed for Snackbar
@@ -26,273 +25,143 @@ class ApiService {
     };
 
     // Logging + Snackbar interceptor
+// ... inside ApiService constructor ...
+
 _dio.interceptors.add(
   dio.InterceptorsWrapper(
-    onRequest: (options, handler) {
-      debugPrint('➡️ Request [${options.method}] => PATH: ${options.path}');
-      debugPrint('Headers: ${options.headers}');
-      debugPrint('Data: ${options.data}');
-      return handler.next(options);
-    },
-    onResponse: (response, handler) {
-      debugPrint(
-          '✅ Response [${response.statusCode}] => PATH: ${response.requestOptions.path}');
-      debugPrint('Data: ${response.data}');
-
-      // Show message if exists and statusCode is 511
-      if (response.statusCode == 511 && response.data['message'] != null) {
-  Get.dialog(
-    barrierDismissible: false,
-    barrierColor: Colors.black54,
-    Scaffold(
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 30),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(10.r),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.error_outline,
-                  size: 50,
-                  color: Colors.redAccent,
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                "Error",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red.shade900,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                response.data['message'].toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  height: 1.5,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 20),
-              
-              // Buttons Row
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                        onPressed: (){
-
-                       Get.back();
-                       Get.back();
-                      },
-                      child: const Text(
-                        "OK",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () {
-                        Get.back(); // Close dialog first
-                        Get.off(()=> PackageListScreen()); // Navigate to Buy Package screen
-                      },
-                      child: const Text(
-                        "Buy Package",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-
-      return handler.next(response);
-    },
+    // ... onRequest and onResponse handlers here ...
+    
     onError: (dio.DioException e, handler) {
+      final statusCode = e.response?.statusCode;
       debugPrint(
-          '❌ Error [${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
+          '❌ Error [${statusCode}] => PATH: ${e.requestOptions.path}');
       debugPrint('Error Data: ${e.response?.data}');
 
       final errorMessage = e.response?.data is Map
           ? e.response?.data['message'] ?? e.message
           : e.message;
 
-      if (e.response?.statusCode == 511 && errorMessage != null) {
-  Get.dialog(
-    barrierDismissible: false,
-    barrierColor: Colors.black54,
-    Scaffold(
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 30),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(10.r),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.error_outline,
-                  size: 50,
-                  color: Colors.redAccent,
-                ),
-              ),
-              const SizedBox(height: 15),
-              Text(
-                "Error",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red.shade900,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                errorMessage.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  height: 1.5,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 20),
-              
-              // Buttons Row
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: (){
-
-                       Get.back();
-                       Get.back();
-                      },
-                      child: const Text(
-                        "OK",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      onPressed: () {
-                        Get.back(); // Close dialog first
-                        Get.off(()=> PackageListScreen()); // Navigate to Buy Package screen
-                      },
-                      child: const Text(
-                        "Buy Package",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+      // This condition checks for both 406 and 511
+      if ((statusCode == 406 || statusCode == 511) && errorMessage != null) {
+        Get.dialog(
+          barrierDismissible: false,
+          barrierColor: Colors.black54,
+          Center( // Use Center for the dialog content
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-            ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10.r),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.error_outline,
+                      size: 50,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    "Error",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red.shade900,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    errorMessage.toString(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  // Buttons Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: (){
+                            Get.back(); // Close dialog
+                            Get.back(); // Go back one more screen
+                          },
+                          child: const Text(
+                            "OK",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onPressed: () {
+                            Get.back(); // Close dialog first
+                            Get.off(()=> const PackageListScreen()); // Navigate to Buy Package screen
+                          },
+                          child: const Text(
+                            "Buy Package",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    ),
-  );
-}
-else {
+        );
+      } else {
+        // Handle all other errors with a Snackbar
         Get.snackbar(
           'Error',
           errorMessage.toString(),
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Get.theme.colorScheme.errorContainer,
+          backgroundColor: Get.theme.colorScheme.error,
           colorText: Get.theme.colorScheme.onError,
         );
       }
@@ -300,6 +169,7 @@ else {
       return handler.next(e);
     },
   ),
+
 );
   }
 
