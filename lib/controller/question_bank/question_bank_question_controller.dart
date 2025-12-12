@@ -10,8 +10,8 @@ class QuestionBankQuestionController extends GetxController {
   var page = 1.obs;
   var totalPages = 1.obs;
 
-  String categoryId = "0";      // Selected Category
-  int subCategoryId = 0;        // Selected SubCategory
+  String categoryId = "0"; // Selected Category
+  int subCategoryId = 0; // Selected SubCategory
 
   final ScrollController scrollController = ScrollController();
 
@@ -31,42 +31,41 @@ class QuestionBankQuestionController extends GetxController {
     });
   }
 
-Future<void> fetchQuestions({int pageNum = 1}) async {
-  try {
-    if (pageNum == 1) isLoading.value = true; // main loader for first page
-    if (pageNum > 1) isLoading.value = true;  // optional: show bottom loader for pagination
+  Future<void> fetchQuestions({int pageNum = 1}) async {
+    try {
+      if (pageNum == 1) isLoading.value = true; // main loader for first page
+      if (pageNum > 1)
+        isLoading.value = true; // optional: show bottom loader for pagination
 
-    final response = await ApiService().get(
-      ApiEndpoint.questionBank,
-      queryParameters: {
-        "page": pageNum.toString(),
-        "per_page": "5000",
-        "question_bank_category_id": categoryId.toString(),
-        "question_bank_sub_category_id": subCategoryId.toString(),
-      },
-    );
+      final response = await ApiService().get(
+        ApiEndpoint.questionBank,
+        queryParameters: {
+          "page": pageNum.toString(),
+          "per_page": "5000",
+          "question_bank_category_id": categoryId.toString(),
+          "question_bank_sub_category_id": subCategoryId.toString(),
+        },
+      );
 
-    final data = QuestionBankQuestionResponse.fromJson(response.data);
+      final data = QuestionBankQuestionResponse.fromJson(response.data);
 
-    // Update list first
-    if (pageNum == 1) {
-      questions.assignAll(data.data); // first page replaces old list
-    } else {
-      questions.addAll(data.data);    // next pages append
+      // Update list first
+      if (pageNum == 1) {
+        questions.assignAll(data.data); // first page replaces old list
+      } else {
+        questions.addAll(data.data); // next pages append
+      }
+
+      // Update pagination info
+      page.value = data.currentPage;
+      totalPages.value = data.totalPages;
+    } catch (e) {
+      print('Error fetching question bank questions: $e');
+    } finally {
+      // Hide loader after data is fully assigned
+      isLoading.value = false;
     }
-
-    // Update pagination info
-    page.value = data.currentPage;
-    totalPages.value = data.totalPages;
-
-  } catch (e) {
-    print('Error fetching question bank questions: $e');
-  } finally {
-    // Hide loader after data is fully assigned
-    isLoading.value = false;
   }
-}
-
 
   void loadNextPage() {
     if (page.value < totalPages.value && !isLoading.value) {
@@ -76,7 +75,11 @@ Future<void> fetchQuestions({int pageNum = 1}) async {
   }
 
   /// Reload questions for new category/subcategory
-  void reloadForCategory({required String newCategoryId, int newSubCategoryId = 0}) {
+  void reloadForCategory({
+    required String newCategoryId,
+    int newSubCategoryId = 0,
+  }) {
+    isLoading.value = true; // ✅ Force loader immediately
     categoryId = newCategoryId;
     subCategoryId = newSubCategoryId;
     page.value = 1;

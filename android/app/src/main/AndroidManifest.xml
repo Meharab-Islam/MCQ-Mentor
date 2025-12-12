@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mcqmentor.app">
+    package="com.example.mcq_mentor">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>

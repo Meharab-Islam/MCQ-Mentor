@@ -29,10 +29,12 @@ class _QuestionBankGiveExamScreenState
   late final QuestionBankQuestionController questionController;
   late final QuestionBankGiveExamController examController;
 
-  final QuestionBankCategoryController categoryController =
-      Get.put(QuestionBankCategoryController());
-  final QuestionBankSubCategoryController subCategoryController =
-      Get.put(QuestionBankSubCategoryController());
+  final QuestionBankCategoryController categoryController = Get.put(
+    QuestionBankCategoryController(),
+  );
+  final QuestionBankSubCategoryController subCategoryController = Get.put(
+    QuestionBankSubCategoryController(),
+  );
 
   final Map<int, String> _selectedOptions = {}; // local selected options
 
@@ -47,9 +49,10 @@ class _QuestionBankGiveExamScreenState
 
     examController = Get.put(
       QuestionBankGiveExamController(
-          examId: widget.subCategoryId,
-          categoryId: widget.categoryId,
-          subCategoryId: widget.subCategoryId),
+        examId: widget.subCategoryId,
+        categoryId: widget.categoryId,
+        subCategoryId: widget.subCategoryId,
+      ),
     );
 
     // Load questions
@@ -69,7 +72,8 @@ class _QuestionBankGiveExamScreenState
     // Pagination listener
     questionController.scrollController.addListener(() {
       if (questionController.scrollController.position.pixels >=
-              questionController.scrollController.position.maxScrollExtent - 200 &&
+              questionController.scrollController.position.maxScrollExtent -
+                  200 &&
           !questionController.isLoading.value &&
           questionController.page.value < questionController.totalPages.value) {
         questionController.loadNextPage();
@@ -109,7 +113,10 @@ class _QuestionBankGiveExamScreenState
                 children: [
                   /// Negative mark radio buttons
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 7.w),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 0.h,
+                      horizontal: 7.w,
+                    ),
                     decoration: BoxDecoration(
                       color: Get.theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(20.r),
@@ -119,32 +126,39 @@ class _QuestionBankGiveExamScreenState
                         Text(
                           "Negative Mark: ",
                           style: TextStyle(
-                              color: Get.theme.colorScheme.onPrimary,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold),
+                            color: Get.theme.colorScheme.onPrimary,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Row(
                           children: [0.25, 0.5].map((value) {
                             return Row(
                               children: [
-                                Obx(() => Radio<double>(
-                                      value: value,
-                                      groupValue:
-                                          examController.selectedNegativeMark.value,
-                                      activeColor:
-                                          Get.theme.colorScheme.onPrimary,
-                                      onChanged: (val) {
-                                        if (val != null) {
-                                          examController.selectedNegativeMark.value =
-                                              val;
-                                        }
-                                      },
-                                    )),
+                                Obx(
+                                  () => Radio<double>(
+                                    value: value,
+                                    groupValue: examController
+                                        .selectedNegativeMark
+                                        .value,
+                                    activeColor:
+                                        Get.theme.colorScheme.onPrimary,
+                                    onChanged: (val) {
+                                      if (val != null) {
+                                        examController
+                                                .selectedNegativeMark
+                                                .value =
+                                            val;
+                                      }
+                                    },
+                                  ),
+                                ),
                                 Text(
                                   "$value",
                                   style: TextStyle(
-                                      color: Get.theme.colorScheme.onPrimary,
-                                      fontSize: 14.sp),
+                                    color: Get.theme.colorScheme.onPrimary,
+                                    fontSize: 14.sp,
+                                  ),
                                 ),
                               ],
                             );
@@ -156,7 +170,10 @@ class _QuestionBankGiveExamScreenState
 
                   /// Timer
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 6.h,
+                      horizontal: 12.w,
+                    ),
                     decoration: BoxDecoration(
                       color: examController.remainingSeconds <= 60
                           ? Colors.redAccent
@@ -167,13 +184,16 @@ class _QuestionBankGiveExamScreenState
                       children: [
                         const Icon(Icons.timer, color: Colors.white, size: 18),
                         SizedBox(width: 6.w),
-                        Obx(() => Text(
-                              examController.formattedTime.value,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.sp),
-                            )),
+                        Obx(
+                          () => Text(
+                            examController.formattedTime.value,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -188,8 +208,9 @@ class _QuestionBankGiveExamScreenState
             child: Obx(() {
               final totalQuestions = questionController.questions.length;
               final answeredCount = examController.selectedAnswers.length;
-              final progress =
-                  totalQuestions == 0 ? 0.0 : answeredCount / totalQuestions;
+              final progress = totalQuestions == 0
+                  ? 0.0
+                  : answeredCount / totalQuestions;
 
               Color progressColor;
               if (progress < 0.33) {
@@ -245,7 +266,8 @@ class _QuestionBankGiveExamScreenState
               if (questionController.isLoading.value) {
                 return Center(
                   child: CircularProgressIndicator(
-                      color: Get.theme.colorScheme.onPrimary),
+                    color: Get.theme.colorScheme.onPrimary,
+                  ),
                 );
               }
 
@@ -262,15 +284,20 @@ class _QuestionBankGiveExamScreenState
                   children: questions.map((question) {
                     final selected = _selectedOptions[question.id];
                     final isExamFinished = examController.isExamFinished.value;
-                    final bool isQuestionLocked =
-                        _selectedOptions.containsKey(question.id);
+                    final bool isQuestionLocked = _selectedOptions.containsKey(
+                      question.id,
+                    );
 
                     Color cardBackgroundColor;
                     if (isExamFinished) {
                       cardBackgroundColor = Colors.white;
                     } else if (isQuestionLocked) {
-                      cardBackgroundColor =
-                          const Color.fromARGB(255, 209, 214, 240);
+                      cardBackgroundColor = const Color.fromARGB(
+                        255,
+                        209,
+                        214,
+                        240,
+                      );
                     } else {
                       cardBackgroundColor = Colors.white;
                     }
@@ -279,7 +306,8 @@ class _QuestionBankGiveExamScreenState
                       elevation: 2,
                       color: cardBackgroundColor,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r)),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
                       margin: EdgeInsets.only(bottom: 12.h),
                       child: Padding(
                         padding: EdgeInsets.all(12.w),
@@ -302,27 +330,71 @@ class _QuestionBankGiveExamScreenState
                               },
                             ),
                             SizedBox(height: 8.h),
-                            ...question.options.map((option) {
+                            ...question.options.asMap().entries.map((entry) {
+                              final int index = entry.key;
+                              final String option = entry.value;
                               final isSelected = selected == option;
+
+                              // Dynamic Label Logic
+                              String optionLabel;
+                              if (question.template.toLowerCase() ==
+                                  "bangla") {
+                                const bengaliLabels = [
+                                  'ক',
+                                  'খ',
+                                  'গ',
+                                  'ঘ',
+                                  'ঙ',
+                                  'চ',
+                                ];
+                                optionLabel = index < bengaliLabels.length
+                                    ? bengaliLabels[index]
+                                    : String.fromCharCode(
+                                        0x0995 + index,
+                                      ); // Fallback
+                              } else {
+                                const englishLabels = [
+                                  'A',
+                                  'B',
+                                  'C',
+                                  'D',
+                                  'E',
+                                  'F',
+                                ];
+                                optionLabel = index < englishLabels.length
+                                    ? englishLabels[index]
+                                    : String.fromCharCode(
+                                        65 + index,
+                                      ); // Fallback to A, B, C...
+                              }
+
                               return GestureDetector(
                                 onTap: isExamFinished || isQuestionLocked
                                     ? null
                                     : () {
                                         setState(() {
-                                          _selectedOptions[question.id] = option;
-                                          examController.selectedAnswers[question.id] =
+                                          _selectedOptions[question.id] =
+                                              option;
+                                          examController
+                                                  .selectedAnswers[question
+                                                  .id] =
                                               option;
                                         });
                                       },
                                 child: Opacity(
-                                  opacity: isExamFinished || isQuestionLocked ? 0.8 : 1,
+                                  opacity: isExamFinished || isQuestionLocked
+                                      ? 0.8
+                                      : 1,
                                   child: Container(
                                     margin: EdgeInsets.symmetric(vertical: 4.h),
                                     padding: EdgeInsets.symmetric(
-                                        vertical: 10.h, horizontal: 12.w),
+                                      vertical: 10.h,
+                                      horizontal: 12.w,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? Get.theme.colorScheme.onPrimary.withAlpha(70)
+                                          ? Get.theme.colorScheme.onPrimary
+                                                .withAlpha(70)
                                           : Colors.white,
                                       border: Border.all(
                                         color: isSelected
@@ -333,25 +405,52 @@ class _QuestionBankGiveExamScreenState
                                     ),
                                     child: Row(
                                       children: [
-                                        Icon(
-                                          isSelected
-                                              ? Icons.radio_button_checked
-                                              : Icons.radio_button_off,
-                                          color: isSelected
-                                              ? Get.theme.colorScheme.onPrimary
-                                              : Colors.grey,
-                                        ),
-                                        SizedBox(width: 8.w),
-                                        Expanded(
-                                          child: Html(data: option,
-                                              style: {
-                                            "body": Style(
-                                              fontSize: FontSize(15.sp),
-                                              margin: Margins.all(0),
-                                              padding: HtmlPaddings.all(0),
+                                        // Option Label (A/B/C/D or ক/খ/গ/ঘ)
+                                        Container(
+                                          width: 30.w,
+                                          height: 30.w,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: isSelected
+                                                ? Get
+                                                      .theme
+                                                      .colorScheme
+                                                      .onPrimary
+                                                : Colors.grey.shade200,
+                                          ),
+                                          child: Text(
+                                            optionLabel,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14.sp,
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.black87,
                                             ),
-                                              }),
+                                          ),
                                         ),
+                                        SizedBox(width: 12.w),
+                                        Expanded(
+                                          child: Html(
+                                            data: option,
+                                            style: {
+                                              "body": Style(
+                                                fontSize: FontSize(15.sp),
+                                                margin: Margins.all(0),
+                                                padding: HtmlPaddings.all(0),
+                                                color: Colors.black87,
+                                              ),
+                                            },
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          Icon(
+                                            Icons.check_circle,
+                                            color:
+                                                Get.theme.colorScheme.onPrimary,
+                                            size: 20.sp,
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -372,19 +471,26 @@ class _QuestionBankGiveExamScreenState
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10.h),
             child: Obx(() {
-              final isDisabled = examController.isLoading.value ||
+              final isDisabled =
+                  examController.isLoading.value ||
                   examController.isExamFinished.value;
 
               return ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isDisabled ? Colors.grey : Get.theme.colorScheme.onPrimary,
-                  padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 14.h),
+                  backgroundColor: isDisabled
+                      ? Colors.grey
+                      : Get.theme.colorScheme.onPrimary,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 40.w,
+                    vertical: 14.h,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.r),
                   ),
                 ),
-                onPressed: isDisabled ? null : () => examController.submitExam(),
+                onPressed: isDisabled
+                    ? null
+                    : () => examController.submitExam(),
                 icon: examController.isLoading.value
                     ? SizedBox(
                         width: 20,
@@ -396,7 +502,9 @@ class _QuestionBankGiveExamScreenState
                       )
                     : const Icon(Icons.check_circle, color: Colors.white),
                 label: Text(
-                  examController.isLoading.value ? "Submitting..." : "Submit Exam",
+                  examController.isLoading.value
+                      ? "Submitting..."
+                      : "Submit Exam",
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,

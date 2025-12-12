@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:692082661577:android:3d61943c752e8d1900d518",
         "android_client_info": {
-          "package_name": "com.mcqmentor.app"
+          "package_name": "com.example.mcq_mentor"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "692082661577-apu2rkeo2ihc2hiqcv3vs15q4nkudf89.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mcqmentor.app",
+            "package_name": "com.example.mcq_mentor",
             "certificate_hash": "aa0c2fa63809118a39372b6af72380feda94b019"
           }
         },

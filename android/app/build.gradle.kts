@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mcqmentor.app"
+    namespace = "com.example.mcq_mentor"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mcqmentor.app"
+        applicationId = "com.example.mcq_mentor"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
